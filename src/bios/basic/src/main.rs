@@ -5,9 +5,11 @@
 mod mode_switch;
 mod display;
 mod bitwise;
+mod gdt_ldt;
+mod ring;
 
 use core::panic::PanicInfo;
-use display::display;
+use display::display_real;
 use mode_switch::to_protect;
 
 #[link_section = ".stage_1"]
@@ -31,7 +33,8 @@ unsafe fn init_regs() {
         "mov ax, cs",
         "mov ds, ax",
         "mov es, ax",
-        "mov ss, ax"
+        "mov ss, ax",
+        "mov sp, 0x7000"
     );
 }
 
@@ -41,6 +44,7 @@ unsafe fn init_regs() {
 #[no_mangle]
 unsafe fn _start() -> ! {
     init_regs();
+    display_real("Initializing...");
     to_protect();
 
     loop {}
