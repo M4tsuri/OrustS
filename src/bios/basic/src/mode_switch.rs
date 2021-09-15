@@ -68,12 +68,12 @@ const fn pack_gdt(base: u32, limit: u32, perm: u8, s_type: u8, privilege: u8, pr
 static GDT_TABLE: [u64; GDT_LEN as usize] = [
     // An empty entry (Null Segment) which is reserved by Intel
     pack_gdt(0, 0, 0, 0, 0, 0, 0, 0), 
-    // Code
-    pack_gdt(0x0, 0xB8000, 8, 1, 0, 1, 0b100, 0),
-    // Data
-    pack_gdt(0x0, 0xB8000, 3, 1, 0, 1, 0b100, 0),
-    // Stack
-    pack_gdt(0x0, 0xB8000, 7, 1, 0, 1, 0b100, 0),
+    // Code Segment, 512KiB
+    pack_gdt(0x0, 0x80000, 8, 1, 0, 1, 0b100, 0),
+    // Data Segment, 112KiB
+    pack_gdt(0x80000, 0x9c000, 3, 1, 0, 1, 0b100, 0),
+    // Stack Segment, 112KiB, grow down
+    pack_gdt(0x9c000, 0xb8000, 7, 1, 0, 1, 0b100, 0),
     // Video RAM
     pack_gdt(0xb8000, 0xffff, 3, 1, 0, 1, 0b100, 0), 
 ];
