@@ -40,8 +40,8 @@ unsafe impl Sync for GDTDescriptor {}
 ///
 /// For the attributes field: 
 ///
-/// - 0: Available to System Programmers flag, ignore it
-/// - 1: reserved bit, ignore it
+/// - 0: Available to System Programmers flag, reserved
+/// - 1: 64-bit code segment
 /// - 2: size bit, set if out code is 32-bit, 16-bit vice versa
 ///
 /// For granularity, CPU will multiply our limit by 4KB if this bit is set.
@@ -68,11 +68,13 @@ const fn pack_gdt(base: u32, limit: u32, perm: u8, s_type: u8, privilege: u8, pr
 static GDT_TABLE: [u64; GDT_LEN as usize] = [
     // An empty entry (Null Segment) which is reserved by Intel
     pack_gdt(0, 0, 0, 0, 0, 0, 0, 0), 
-    // code and data, mixed now 
+    // Code
     pack_gdt(0x0, 0xB8000, 8, 1, 0, 1, 0b100, 0),
+    // Data
     pack_gdt(0x0, 0xB8000, 3, 1, 0, 1, 0b100, 0),
+    // Stack
     pack_gdt(0x0, 0xB8000, 7, 1, 0, 1, 0b100, 0),
-    // vedio ram
+    // Video RAM
     pack_gdt(0xb8000, 0xffff, 3, 1, 0, 1, 0b100, 0), 
 ];
 
