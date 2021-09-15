@@ -1,5 +1,5 @@
-#[link_section = ".stage1"]
-/// display a string on screen, see https://stanislavs.org/helppc/int_10-13.html
+#[link_section = ".stage_1"]
+/// display a string on screen, see <https://stanislavs.org/helppc/int_10-13.html>
 pub fn display(src: &str) {
     let ptr = src.as_ptr();
     let len = src.len() as u16;

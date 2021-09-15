@@ -10,7 +10,7 @@ use core::panic::PanicInfo;
 use display::display;
 use mode_switch::to_protect;
 
-#[link_section = ".stage1"]
+#[link_section = ".stage_1"]
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
     loop {}
