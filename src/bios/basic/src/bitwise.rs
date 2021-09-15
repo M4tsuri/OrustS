@@ -1,26 +1,32 @@
 /// Some bitwise operations which may be useful for writing out code.
+/// Functions and macros in this module must not appear in the object file.
+/// Since macros are expanded at compile-time, we do not need to worry about them.
+/// But functions must be const, and explictly declared to be put in .discard section, 
+/// which will be dropped during linking.
 
-#[macro_export]
-macro_rules! mask_assign {
-    ($dest:expr, $src:expr, $dest_start:expr, $src_start:expr, $len:expr) => {{
-        let dest_mask = gen_mask!($dest_start, $len);
-        let src_mask = gen_mask!($src_start, $len);
+/// Assign src[src_start:src_start + len] bit to dest[dest_start:dest_start + len]
+#[link_section = ".discard"]
+pub const fn mask_assign(mut dest: u64, src: u64, dest_start: u8, src_start: u8, len: u8) -> u64 {
+    let dest_mask = gen_mask(dest_start, len);
+    let src_mask = gen_mask(src_start, len);
 
-        // clear corresponding bits in dest 
-        $dest &= !dest_mask;
+    // clear corresponding bits in dest 
+    dest &= !dest_mask;
 
-        $dest | if $dest_start > $src_start {
-            ($src & src_mask) << ($dest_start - $src_start)
-        } else {
-            ($src & src_mask) << ($src_start - $dest_start)
-        }
-    }}
+    let gap: i8 = (src_start as i8 - dest_start as i8).abs();
+
+    dest | if dest_start >= src_start {
+        (src & src_mask) << gap
+    } else {
+        (src & src_mask) >> gap
+    }
 }
 
-#[macro_export]
-macro_rules! gen_mask {
-    ($start:expr, $len:expr) => {{
-        (1 << ($start + $len) - 1) ^ (1 << $start - 1)
-    }}
+#[link_section = ".discard"]
+pub const fn gen_mask(start: u8, len: u8) -> u64 {
+    if start + len >= 64 {
+        !0 ^ ((1 << start) - 1)
+    } else {
+        ((1 << (start + len)) - 1) ^ ((1 << start) - 1)
+    }   
 }
-
