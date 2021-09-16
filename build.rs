@@ -19,11 +19,21 @@ fn main() {
     let target_dir = current_dir.join(target_dir_rel);
 
     // build stage 1st
-    let stage_1st_dir = manifest_dir.join("src/bios/basic");
+    let stage_1st_dir = manifest_dir.join("src/bios/stage_1");
     let stage_1st_triple = stage_1st_dir.join("target.json");
     build_subproject(
         &stage_1st_dir,
         &stage_1st_triple,
+        &target_dir,
+        &objcopy,
+        &cargo,
+    );
+
+    let stage_2st_dir = manifest_dir.join("src/bios/stage_2");
+    let stage_2st_triple = stage_2st_dir.join("target.json");
+    build_subproject(
+        &stage_2st_dir,
+        &stage_2st_triple,
         &target_dir,
         &objcopy,
         &cargo,
