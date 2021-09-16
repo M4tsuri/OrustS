@@ -1,9 +1,6 @@
 use crate::bitwise::mask_assign;
 use crate::ring::Privilege;
 
-/// the length of GDT, 3 by default (include a null entry)
-const GDT_LEN: u16 = 5;
-
 /// A GDT Descriptor descriping the length of GDT and location of GDT in memory.
 /// The address of this describtor will be passed to lgdt instruction to fill GDT.
 ///
@@ -12,8 +9,8 @@ const GDT_LEN: u16 = 5;
 #[repr(packed)]
 #[allow(improper_ctypes)]
 pub struct GDTDescriptor {
-    limit: u16,
-    base_address: *const u64
+    pub limit: u16,
+    pub base_address: *const u64
 }
 
 unsafe impl Sync for GDTDescriptor {}
@@ -47,7 +44,7 @@ unsafe impl Sync for GDTDescriptor {}
 ///
 /// For granularity, CPU will multiply our limit by 4KB if this bit is set.
 #[link_section = ".discard"]
-const fn pack_gdt(base: u32, limit: u32, perm: u8, s_type: u8, privilege: u8, present: u8, attrs: u8, granularity: u8) -> u64 {
+pub const fn pack_gdt(base: u32, limit: u32, perm: u8, s_type: u8, privilege: u8, present: u8, attrs: u8, granularity: u8) -> u64 {
     let mut res: u64 = 0x0;
     res = mask_assign(res, limit as u64, 0, 0, 16);
     res = mask_assign(res, base as u64, 16, 0, 24);
@@ -61,40 +58,6 @@ const fn pack_gdt(base: u32, limit: u32, perm: u8, s_type: u8, privilege: u8, pr
     res = mask_assign(res, base as u64, 56, 24, 8);
     res
 }
-
-/// The GDT, Global Descriptor Table.
-/// The address of GDT should be 8 byte aligned to get better performance (see *Intel Developer Manual Vol. 3A 3-15*).
-#[used]
-#[link_section = ".gdt"]
-static GDT_TABLE: [u64; GDT_LEN as usize] = [
-    // An empty entry (Null Segment) which is reserved by Intel
-    pack_gdt(0, 0, 0, 0, 
-        Privilege::Ring0 as u8, 0, 0, 0), 
-    // Code Segment, 512KiB
-    pack_gdt(0x0, 0x80000, 8, 1, 
-        Privilege::Ring0 as u8, 1, 0b100, 0),
-    // Data Segment, 112KiB
-    pack_gdt(0x80000, 0x9c000, 3, 1, 
-        Privilege::Ring0 as u8, 1, 0b100, 0),
-    // Stack Segment, 112KiB, grow down
-    pack_gdt(0x9c000, 0xb8000, 7, 1, 
-        Privilege::Ring0 as u8, 1, 0b100, 0),
-    // Video RAM
-    pack_gdt(0xb8000, 0xffff, 3, 1, 
-        Privilege::Ring0 as u8, 1, 0b100, 0), 
-];
-
-/// An instance of GDT descriptor, occupying 6 bytes in memory.
-/// The `limit` field is the length of GDT **in bytes** - 1, which is used by processor 
-/// to find the last valid byte in GDT (see *Intel Developer Manual Vol. 3A 3-15*).
-#[used]
-#[no_mangle]
-#[allow(improper_ctypes)]
-#[link_section = ".gdt_desc"]
-pub static mut GDT_DESCRIPTOR: GDTDescriptor = GDTDescriptor {
-    limit: GDT_LEN * 8 - 1,
-    base_address: GDT_TABLE.as_ptr()
-};
 
 /// The GDT selector encodes 
 ///
@@ -113,10 +76,12 @@ pub enum GDTSelector {
     NULL = pack_selector(0, DTType::GDT, Privilege::Ring0),
     CODE = pack_selector(1, DTType::GDT, Privilege::Ring0),
     DATA = pack_selector(2, DTType::GDT, Privilege::Ring0),
-    VIDEO = pack_selector(3, DTType::GDT, Privilege::Ring0)
+    STACK = pack_selector(3, DTType::GDT, Privilege::Ring0),
+    VIDEO = pack_selector(4, DTType::GDT, Privilege::Ring0)
 }
 
 /// Descriptor table type, GDT or LDT
+#[repr(u8)]
 pub enum DTType {
     GDT = 0,
     LDT = 1
@@ -130,6 +95,6 @@ pub const fn pack_selector(index: u16, table: DTType, rpl: Privilege) -> u16 {
     let mut res = 0;
     res = mask_assign(res as u64, rpl as u64, 0, 0, 2) as u16;
     res = mask_assign(res as u64, table as u64, 2, 0, 1) as u16;
-    res = mask_assign(res as u64, (index * 8) as u64, 3, 0, 13) as u16;
+    res = mask_assign(res as u64, index as u64, 3, 0, 13) as u16;
     res
 }

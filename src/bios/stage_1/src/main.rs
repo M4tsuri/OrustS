@@ -4,9 +4,7 @@
 
 mod mode_switch;
 mod display;
-mod bitwise;
-mod gdt_ldt;
-mod ring;
+mod img_load;
 
 use core::panic::PanicInfo;
 use display::display_real;

@@ -7,6 +7,7 @@
 /// - Ring3 is for user mode applications
 ///
 /// See *Intel Developer Manual Vol. 3A 5-6 5.5 PRIVILEGE LEVELS*
+#[repr(u8)]
 pub enum Privilege {
     Ring0 = 0,
     Ring1 = 1,
