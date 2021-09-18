@@ -38,6 +38,16 @@ fn main() {
         &objcopy,
         &cargo,
     );
+
+    let stage_3rd_dir = manifest_dir.join("src/bios/stage_3");
+    let stage_3rd_triple = stage_3rd_dir.join("target.json");
+    build_subproject(
+        &stage_3rd_dir,
+        &stage_3rd_triple,
+        &target_dir,
+        &objcopy,
+        &cargo,
+    );
 }
 
 fn build_subproject(
