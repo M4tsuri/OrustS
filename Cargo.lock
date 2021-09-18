@@ -6,8 +6,13 @@ version = 3
 name = "bootloader"
 version = "0.1.0"
 dependencies = [
+ "layout",
  "llvm-tools",
 ]
+
+[[package]]
+name = "layout"
+version = "0.1.0"
 
 [[package]]
 name = "llvm-tools"
