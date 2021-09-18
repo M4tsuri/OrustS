@@ -9,7 +9,7 @@ use core::panic::PanicInfo;
 use display::display_at;
 use i386::gdt_ldt::GDTSelector;
 
-#[link_section = ".stage_2"]
+#[link_section = ".stage_3"]
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
     loop {}

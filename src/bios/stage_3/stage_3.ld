@@ -6,7 +6,7 @@ MEMORY {
 ENTRY(_start);
 
 SECTIONS {
-    .text   :   { *(.startup) *(.stage_2) }    > body      /* Excutable code */
+    .text   :   { *(.startup) *(.stage_3) }    > body      /* Excutable code */
     .rodata :   { *(.rodata*) }        > data      /* Constants (R/O) */
     .data   :   { *(.data*) }          > data      /* Initialized data */
     .bss    :   { *(.bss*) }           > data      /* Unitnitialized data */
