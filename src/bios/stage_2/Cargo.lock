@@ -3,5 +3,20 @@
 version = 3
 
 [[package]]
+name = "i386"
+version = "0.1.0"
+dependencies = [
+ "layout",
+]
+
+[[package]]
+name = "layout"
+version = "0.1.0"
+
+[[package]]
 name = "stage_2"
 version = "0.1.0"
+dependencies = [
+ "i386",
+ "layout",
+]
