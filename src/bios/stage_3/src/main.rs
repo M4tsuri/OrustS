@@ -43,6 +43,6 @@ unsafe fn init_protect() {
 #[no_mangle]
 unsafe fn _start() -> ! {
     init_protect();
-    display_at(11, 79, "P");
+    display_at(10, 0, "In Protect Mode Now.");
     loop {}
 }
