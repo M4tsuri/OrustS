@@ -4,10 +4,11 @@
 
 mod display;
 mod mem;
+mod mode_switch;
 
 use core::panic::PanicInfo;
 use display::display_at;
-use i386::gdt_ldt::GDTSelector;
+use i386::gdt::GDTSelector;
 
 #[link_section = ".stage_3"]
 #[panic_handler]
@@ -36,9 +37,14 @@ unsafe fn init_protect() {
     }
 
     // 6. re-enable hardware interrupts
+    // TODO: Enable hardware interrupt.
+    // Currently directly executing sti instruction causes weird behavior of QEMU.
+    // Maybe the reason is the lack of IDT.
     // asm!("sti")
 }
 
+/// Now we initially entered. According to *Intel Developer Manual Vol. 3A 9-13*, 
+/// Execution in protect mode begins with a CPL with 0.
 #[link_section = ".startup"]
 #[no_mangle]
 unsafe fn _start() -> ! {

@@ -2,6 +2,8 @@
 #![feature(asm)]
 
 pub mod bitwise;
-pub mod gdt_ldt;
+mod dt_utils;
+pub mod gdt;
+pub mod ldt;
 pub mod ring;
 pub mod disk;
