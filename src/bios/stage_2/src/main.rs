@@ -8,7 +8,7 @@ mod img_load;
 
 use core::{marker::PhantomData, panic::PanicInfo, mem::transmute};
 use display::display_real;
-use img_load::{STAGE3_PTR, STAGE_DISK, load_stage3};
+use img_load::{STAGE3_PTR, load_stage3};
 use mode_switch::to_protect;
 
 

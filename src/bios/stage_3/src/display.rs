@@ -1,4 +1,3 @@
-use core::intrinsics::transmute;
 use layout::VIDEO_START;
 
 /// Under 80x25 16 color mode, each char on screen is defined by a 2 byte value.
