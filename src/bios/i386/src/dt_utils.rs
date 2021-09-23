@@ -59,27 +59,6 @@ pub const fn pack_gdt(base: u32, limit: u32, perm: u8, s_type: u8, privilege: u8
     res
 }
 
-/// The GDT selector encodes 
-///
-/// - index of the entry on a GDT for a segment
-/// - type (GDT or LDT) of a segment
-/// - privilege level of a segment level, note that this indicates the 
-///   requested privilege level (RPL). CPL is the privilege level of current task.
-///   When a task is asking access for a segment with a selector with lower privilege 
-///   than CPL, the request will not be permitted, and vice versa. 
-///   (See *Intel Developer Manual Vol. 3A 5-6 5.5 PRIVILEGE LEVELS*)
-///
-/// into a 16-bit integer. After entering protected mode, segment registers should hold 
-/// values of selectors.
-#[repr(u16)]
-pub enum GDTSelector {
-    NULL = pack_selector(0, DTType::GDT, Privilege::Ring0),
-    CODE = pack_selector(1, DTType::GDT, Privilege::Ring0),
-    DATA = pack_selector(2, DTType::GDT, Privilege::Ring0),
-    STACK = pack_selector(3, DTType::GDT, Privilege::Ring0),
-    VIDEO = pack_selector(4, DTType::GDT, Privilege::Ring0)
-}
-
 /// Descriptor table type, GDT or LDT
 #[repr(u8)]
 pub enum DTType {
