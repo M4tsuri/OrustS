@@ -9,6 +9,7 @@ mod mode_switch;
 use core::panic::PanicInfo;
 use display::display_at;
 use i386::gdt::GDTSelector;
+use layout::STACK_SIZE;
 
 #[link_section = ".stage_3"]
 #[panic_handler]
@@ -56,6 +57,6 @@ fn _start() -> ! {
     init_protect();
     display_at(10, 0, "In Protect Mode Now.");
 
-    to_real(poweroff as u16);
+    crate::mode_switch::to_real(crate::mode_switch::poweroff as u16);
     loop {}
 }

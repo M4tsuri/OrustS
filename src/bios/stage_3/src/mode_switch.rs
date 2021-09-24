@@ -26,7 +26,7 @@ pub fn to_real(target_offset: u16) {
 
 #[no_mangle]
 #[link_section = ".real"]
-pub unsafe fn _to_real() {
+unsafe fn _to_real() {
     // 4. Load segment registers
     asm! {
         ".code16",
