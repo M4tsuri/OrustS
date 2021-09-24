@@ -1,6 +1,10 @@
 MEMORY {
-    body    :   ORIGIN = 0x7e00, LENGTH = 0x71c0
-    gdt     :   ORIGIN = 0xefc0, LENGTH = 0x40
+    body    :   ORIGIN = 0x7e00, LENGTH = 0x7100
+    gdt     :   ORIGIN = 0xef00, LENGTH = 0x100
+    /**
+     * Note that stage 3 actually starts at 0xf000, but the entrypoint of 
+     * stage 3 locates at 0x10000, so we just skip 0x1000 here. 
+     */
     stage3  :   ORIGIN = 0x10000, LENGTH = 0x0
 }
 
