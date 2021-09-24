@@ -1,6 +1,6 @@
 MEMORY {
-    body    :   ORIGIN = 0x7e00, LENGTH = 0x81c0
-    gdt     :   ORIGIN = 0xffc0, LENGTH = 0x40
+    body    :   ORIGIN = 0x7e00, LENGTH = 0x71c0
+    gdt     :   ORIGIN = 0xefc0, LENGTH = 0x40
     stage3  :   ORIGIN = 0x10000, LENGTH = 0x0
 }
 

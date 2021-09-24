@@ -7,6 +7,7 @@
     "target-pointer-width": "32",
     "target-c-int-width": "32",
     "os": "none",
+    "relocation-model": "static",
     "executables": true,
     "linker-flavor": "ld.lld",
     "linker": "rust-lld",

@@ -29,7 +29,7 @@ fn _start() -> ! {
     }
     display_real("Stage 3 loaded.");
     to_protect();
-
+    
     let stage_3: fn() -> ! = unsafe { transmute(&STAGE3_PTR as *const PhantomData<()>) };
     stage_3()
 }
