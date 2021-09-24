@@ -10,7 +10,6 @@ use i386::gdt::{GDTSelector, GDT_DESCRIPTOR};
 /// The detailed steps are descripted in
 /// *Intel Developer Manual Volume Section 9.9.1 Switching to Protect Mode*.
 #[link_section = ".stage_2"]
-#[inline]
 pub fn to_protect() {
     unsafe {
         // 1. Disable maskable hardware interrupts
