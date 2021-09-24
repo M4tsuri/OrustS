@@ -32,7 +32,10 @@ unsafe impl Sync for GDTDescriptor {}
 /// | 56:64 | base[24:32]     |                             |
 /// ```
 ///
-/// For the type field, see *Intel Developer Manual 3-12 Vol.3A Table 3-1*
+/// For the type field, see *Intel Developer Manual 3-12 Vol.3A Table 3-1*:
+/// | 11 | 10 |  9 |  8 |
+/// |  D |  E |  W |  A |
+/// |  C |  C |  R |  A |
 ///
 /// For the s field: clear if this is a system segment, set if this is a code/data segment 
 ///

@@ -4,7 +4,7 @@ use layout::*;
 
 /// The length of GDT, 6 by default (include a null entry).
 /// Current max length is 0x40 / 8 = 8, which is specified in linker script in stage 2
-const GDT_LEN: u16 = 6;
+const GDT_LEN: u16 = 7;
 
 /// The GDT, Global Descriptor Table.
 /// The address of GDT should be 8 byte aligned to get better performance (see *Intel Developer Manual Vol. 3A 3-15*).
@@ -14,19 +14,32 @@ static GDT_TABLE: [u64; GDT_LEN as usize] = [
     // An empty entry (Null Segment) which is reserved by Intel
     pack_gdt(0, 0, 0, 0, 
         Privilege::Ring0 as u8, 0, 0, 0), 
-    // Code Segment, 512KiB
-    pack_gdt(CODE_START, CODE_END, 8, 1, 
-        Privilege::Ring0 as u8, 1, 0b100, 0),
-    // Data Segment, 112KiB
-    pack_gdt(DATA_START, DATA_END, 3, 1, 
-        Privilege::Ring0 as u8, 1, 0b100, 0),
+    // Code Segment, 512KiB, code execute-only
+    pack_gdt(CODE_START, CODE_SIZE, 8, 1, 
+        Privilege::Ring0 as u8, 1, 0b101, 0),
+    // Data Segment, 112KiB, data Read/Write,accessed
+    pack_gdt(DATA_START, DATA_SIZE, 3, 1, 
+        Privilege::Ring0 as u8, 1, 0b001, 0),
     // Stack Segment, 112KiB, grow down
-    pack_gdt(STACK_START, STACK_END, 7, 1, 
-        Privilege::Ring0 as u8, 1, 0b110, 0),
+    pack_gdt(STACK_START, STACK_SIZE, 7, 1, 
+        Privilege::Ring0 as u8, 1, 0b011, 0),
     // Video RAM
-    pack_gdt(0xb8000, 0xffff, 3, 1, 
-        Privilege::Ring0 as u8, 1, 0b100, 0), 
-    pack_gdt(0, 0x0ffff, 2, 1, 
+    pack_gdt(VIDEO_START, VIDEO_SIZE, 3, 1, 
+        Privilege::Ring0 as u8, 1, 0b001, 0), 
+    // A normal segment for executing code to switch to real mode in protect mode.
+    // We make a far jump to code in this segment in protect mode to load cs register
+    // with a segment descriptor with suitable limit and other attributes.
+    // To prevent errors, this segment should satisfy the following conditions:
+    // 1. A 16-bit code segment to make sure our processor works correctly after entering real mode.
+    // 2. A small segment with limit of 0FFFFh
+    //    i.e. max limit is 0FFFFh to meet real mode addressing limitations
+    // 3. Start at 0 to make logical address and linear address consistent.
+    pack_gdt(NORMAL_START, NORMAL_SIZE, 10, 1, 
+        Privilege::Ring0 as u8, 1, 0b000, 0),
+    // A normal segment for mode switching, this is a 16 bit writable data segment.
+    // This segment overlaps with the previous one to meet the real mode unsegmented model.
+    // The descriptor of this segment will be loaded to ss, es, fs, gs, ds after entering real mode.
+    pack_gdt(NORMAL_START, NORMAL_SIZE, 2, 1, 
         Privilege::Ring0 as u8, 1, 0b000, 0)
 ];
 
@@ -61,5 +74,6 @@ pub enum GDTSelector {
     DATA = pack_selector(2, DTType::GDT, Privilege::Ring0),
     STACK = pack_selector(3, DTType::GDT, Privilege::Ring0),
     VIDEO = pack_selector(4, DTType::GDT, Privilege::Ring0),
-    NORMAL = pack_selector(5, DTType::GDT, Privilege::Ring0)
+    SWITCH = pack_selector(5, DTType::GDT, Privilege::Ring0),
+    NORMAL = pack_selector(6, DTType::GDT, Privilege::Ring0)
 }
