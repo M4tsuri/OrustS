@@ -2,9 +2,9 @@ use crate::dt_utils::{DTType, GDTDescriptor, pack_gdt, pack_selector};
 use crate::ring::Privilege;
 use layout::*;
 
-/// The length of GDT, 6 by default (include a null entry).
-/// Current max length is 0x40 / 8 = 8, which is specified in linker script in stage 2
-const GDT_LEN: u16 = 7;
+/// The length of GDT, 8 by default (include a null entry).
+/// Current max length is 0x100 / 8 = 32, which is specified in linker script in stage 2
+const GDT_LEN: u16 = 8;
 
 /// The GDT, Global Descriptor Table.
 /// The address of GDT should be 8 byte aligned to get better performance (see *Intel Developer Manual Vol. 3A 3-15*).
@@ -40,6 +40,11 @@ static GDT_TABLE: [u64; GDT_LEN as usize] = [
     // This segment overlaps with the previous one to meet the real mode unsegmented model.
     // The descriptor of this segment will be loaded to ss, es, fs, gs, ds after entering real mode.
     pack_gdt(NORMAL_START, NORMAL_SIZE - 1, 2, 1, 
+        Privilege::Ring0 as u8, 1, 0b000, 0),
+    // Segment for LDT, note this descriptor is system management descriptor,
+    // so s_type bit is clear.
+    // See *Intel Developer Manual 3-14 Vol. 3A* for perm field definitions.
+    pack_gdt(LDT_START, LDT_SIZE - 1, 2, 0, 
         Privilege::Ring0 as u8, 1, 0b000, 0)
 ];
 
@@ -75,5 +80,6 @@ pub enum GDTSelector {
     STACK = pack_selector(3, DTType::GDT, Privilege::Ring0),
     VIDEO = pack_selector(4, DTType::GDT, Privilege::Ring0),
     SWITCH = pack_selector(5, DTType::GDT, Privilege::Ring0),
-    NORMAL = pack_selector(6, DTType::GDT, Privilege::Ring0)
+    NORMAL = pack_selector(6, DTType::GDT, Privilege::Ring0),
+    LDT = pack_selector(7, DTType::GDT, Privilege::Ring0)
 }
