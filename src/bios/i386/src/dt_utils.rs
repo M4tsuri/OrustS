@@ -46,8 +46,7 @@ unsafe impl Sync for GDTDescriptor {}
 /// - 2: size bit, set if out code is 32-bit, 16-bit vice versa
 ///
 /// For granularity, CPU will multiply our limit by 4KB if this bit is set.
-#[link_section = ".discard"]
-pub const fn pack_gdt(base: u32, limit: u32, perm: u8, s_type: u8, privilege: u8, present: u8, attrs: u8, granularity: u8) -> u64 {
+pub const fn pack_dt(base: u32, limit: u32, perm: u8, s_type: u8, privilege: u8, present: u8, attrs: u8, granularity: u8) -> u64 {
     let mut res: u64 = 0x0;
     res = mask_assign(res, limit as u64, 0, 0, 16);
     res = mask_assign(res, base as u64, 16, 0, 24);
