@@ -1,3 +1,5 @@
+// This is just a modified version of https://github.com/o8vm/krabs/blob/master/build.rs
+
 use llvm_tools::{exe, LlvmTools};
 use std::env;
 use std::path::Path;

@@ -11,6 +11,8 @@ use layout::{STAGE1_SIZE, STAGE2_SIZE, STAGE2_START};
 /// is a dummy section whose size is 0.
 #[link_section = ".stage_2"]
 pub static STAGE2_PTR: PhantomData<()> = PhantomData;
+
+/// The disk index of the first hard disk.
 pub const STAGE_DISK: u8 = 0x80;
 
 #[inline]

@@ -1,6 +1,12 @@
 # Orusts_bootloader
 
-A legacy BIOS bootloader for Orust System, which is a rust implementation of Orange's. Some code are copied from https://github.com/o8vm/krabs.
+A legacy BIOS bootloader for Orust System, which is a rust implementation of Orange's OS. 
+
+This bootloader is written in **pure rust**, i.e. no assembly file and all low-level operations are implemented with rust inline assembly.
+
+I tried my best to avoid magic numbers and add documentation for any confusing configuration. Compile-time generated data structures are used as many as possible so that you don't need to deal with annoying bitwise operations without the cost of runtime space and time.
+
+Some code are copied from https://github.com/o8vm/krabs.
 
 ## Dependency
 
