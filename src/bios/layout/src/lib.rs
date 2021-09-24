@@ -2,8 +2,8 @@
 
 /// This segment is overlapped with the code segment.
 /// It should only be used for protect-real mode switching.
-/// The base address and limit of this segment provides us with approciated for mode switching and
-/// real mode addressing.
+/// The base address and limit of this segment provides us with appreciated values 
+/// for mode switching and real mode addressing.
 pub const NORMAL_START: u32 = 0;
 /// NORMAL size must be 0xffff. See 
 pub const NORMAL_SIZE: u32 = 0xffff;
