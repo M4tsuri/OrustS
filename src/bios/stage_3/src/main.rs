@@ -17,38 +17,45 @@ fn panic(_info: &PanicInfo) -> ! {
 }
 
 #[inline]
-unsafe fn init_protect() {
-    // 5. Load DS, SS, ES, FS and GS with corresponding GDT selectors
-    asm! {
-        "next:",
-        "mov ax, {data}",
-        "mov ds, ax",
-        "mov ax, {stack}",
-        "mov ss, ax",
-        "mov ax, {null}",
-        "mov es, ax",
-        "mov fs, ax",
-        "mov ax, {video}",
-        "mov gs, ax",
-        data = const GDTSelector::DATA as u16,
-        stack = const GDTSelector::STACK as u16,
-        null = const GDTSelector::NULL as u16,
-        video = const GDTSelector::VIDEO as u16
-    }
+fn init_protect() {
+    unsafe {
+        // 5. Load DS, SS, ES, FS and GS with corresponding GDT selectors
+        asm! {
+            "next:",
+            "mov ax, {data}",
+            "mov ds, ax",
+            "mov ax, {stack}",
+            "mov ss, ax",
+            "mov esp, {stack_top}",
+            "mov ax, {null}",
+            "mov es, ax",
+            "mov fs, ax",
+            "mov ax, {video}",
+            "mov gs, ax",
+            data = const GDTSelector::DATA as u16,
+            stack = const GDTSelector::STACK as u16,
+            null = const GDTSelector::NULL as u16,
+            video = const GDTSelector::VIDEO as u16,
+            stack_top = const STACK_SIZE
+        }
 
-    // 6. re-enable hardware interrupts
-    // TODO: Enable hardware interrupt.
-    // Currently directly executing sti instruction causes weird behavior of QEMU.
-    // Maybe the reason is the lack of IDT.
-    // asm!("sti")
+        // 6. re-enable hardware interrupts
+        // TODO: Enable hardware interrupt.
+        // Currently directly executing sti instruction causes weird behavior of QEMU 
+        // due to the lack of IDT.
+        // See https://lists.gnu.org/archive/html/qemu-discuss/2015-01/msg00033.html
+        // asm!("sti")
+    }
 }
 
 /// Now we initially entered. According to *Intel Developer Manual Vol. 3A 9-13*, 
 /// Execution in protect mode begins with a CPL with 0.
 #[link_section = ".startup"]
 #[no_mangle]
-unsafe fn _start() -> ! {
+fn _start() -> ! {
     init_protect();
     display_at(10, 0, "In Protect Mode Now.");
+
+    to_real(poweroff as u16);
     loop {}
 }
