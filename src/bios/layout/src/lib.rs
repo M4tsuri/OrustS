@@ -5,8 +5,8 @@
 /// The base address and limit of this segment provides us with appreciated values 
 /// for mode switching and real mode addressing.
 pub const NORMAL_START: u32 = 0;
-/// NORMAL size must be 0xffff. See 
-pub const NORMAL_SIZE: u32 = 0xffff;
+/// NORMAL size must be 0x10000.
+pub const NORMAL_SIZE: u32 = 0x10000;
 pub const NORMAL_END: u32 = NORMAL_START + NORMAL_SIZE;
 
 
@@ -27,7 +27,7 @@ pub const STACK_START: u32 = 0x9c000;
 pub const STACK_END: u32 = 0xb8000 - 0x10;
 pub const STACK_SIZE: u32 = STACK_END - STACK_START;
 
-pub const STAGE1_START: u32 = CODE_START + 0x7c00;
+pub const STAGE1_START: u32 = 0x7c00;
 pub const STAGE1_SIZE: u32 = 512;
 pub const STAGE1_END: u32 = STAGE1_START + STAGE1_SIZE;
 

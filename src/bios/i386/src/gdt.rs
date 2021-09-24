@@ -15,16 +15,16 @@ static GDT_TABLE: [u64; GDT_LEN as usize] = [
     pack_gdt(0, 0, 0, 0, 
         Privilege::Ring0 as u8, 0, 0, 0), 
     // Code Segment, 512KiB, code execute-only
-    pack_gdt(CODE_START, CODE_SIZE, 8, 1, 
+    pack_gdt(CODE_START, CODE_SIZE - 1, 8, 1, 
         Privilege::Ring0 as u8, 1, 0b101, 0),
     // Data Segment, 112KiB, data Read/Write,accessed
-    pack_gdt(DATA_START, DATA_SIZE, 3, 1, 
+    pack_gdt(DATA_START, DATA_SIZE - 1, 3, 1, 
         Privilege::Ring0 as u8, 1, 0b001, 0),
     // Stack Segment, 112KiB, grow down
-    pack_gdt(STACK_START, STACK_SIZE, 7, 1, 
+    pack_gdt(STACK_START, STACK_SIZE - 1, 7, 1, 
         Privilege::Ring0 as u8, 1, 0b011, 0),
     // Video RAM
-    pack_gdt(VIDEO_START, VIDEO_SIZE, 3, 1, 
+    pack_gdt(VIDEO_START, VIDEO_SIZE - 1, 3, 1, 
         Privilege::Ring0 as u8, 1, 0b001, 0), 
     // A normal segment for executing code to switch to real mode in protect mode.
     // We make a far jump to code in this segment in protect mode to load cs register
@@ -34,12 +34,12 @@ static GDT_TABLE: [u64; GDT_LEN as usize] = [
     // 2. A small segment with limit of 0FFFFh
     //    i.e. max limit is 0FFFFh to meet real mode addressing limitations
     // 3. Start at 0 to make logical address and linear address consistent.
-    pack_gdt(NORMAL_START, NORMAL_SIZE, 10, 1, 
+    pack_gdt(NORMAL_START, NORMAL_SIZE - 1, 10, 1, 
         Privilege::Ring0 as u8, 1, 0b000, 0),
     // A normal segment for mode switching, this is a 16 bit writable data segment.
     // This segment overlaps with the previous one to meet the real mode unsegmented model.
     // The descriptor of this segment will be loaded to ss, es, fs, gs, ds after entering real mode.
-    pack_gdt(NORMAL_START, NORMAL_SIZE, 2, 1, 
+    pack_gdt(NORMAL_START, NORMAL_SIZE - 1, 2, 1, 
         Privilege::Ring0 as u8, 1, 0b000, 0)
 ];
 
