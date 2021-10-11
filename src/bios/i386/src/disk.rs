@@ -42,6 +42,9 @@ fn extended_read_sectors(disk: u8, dap_ptr: *const DAP) -> Result<(), &'static s
 }
 
 impl DAP {
+    /// - disk: (disk_id, start_lba)
+    /// - buffer: (segment, offset)
+    /// - len: length in bytes
     pub const fn new(disk: (u8, u64), buffer: (u16, u16), len: u32) -> Self {
         Self {
             self_size: 0x10,
