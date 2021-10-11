@@ -43,7 +43,7 @@ unsafe impl Sync for GDTDescriptor {}
 ///
 /// - 0: Available to System Programmers flag, reserved
 /// - 1: 64-bit code segment
-/// - 2: size bit, set if out code is 32-bit, 16-bit vice versa
+/// - 2: size bit, set if our code is 32-bit, 16-bit vice versa
 ///
 /// For granularity, CPU will multiply our limit by 4KB if this bit is set.
 pub const fn pack_dt(base: u32, limit: u32, perm: u8, s_type: u8, privilege: u8, present: u8, attrs: u8, granularity: u8) -> u64 {
