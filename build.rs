@@ -1,11 +1,63 @@
 // This is just a modified version of https://github.com/o8vm/krabs/blob/master/build.rs
 
 use llvm_tools::{exe, LlvmTools};
-use std::env;
+use std::{collections::HashMap, env};
 use std::path::Path;
 use std::process::Command;
+use serde::{Deserialize, Serialize};
+use handlebars::Handlebars;
 
 fn main() {
+    let templates = [
+        "./src/bios/layout/src/lib.rs.temp",
+        "./src/bios/stage_1/stage_1.ld.temp",
+        "./src/bios/stage_2/stage_2.ld.temp",
+        "./src/bios/stage_3/stage_3.ld.temp",
+    ];
+
+    for template in templates {
+        apply_template("./layout.yaml", template);
+    }
+    
+    build_all(&["src/bios/stage_1", "src/bios/stage_2", "src/bios/stage_3"]);
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct Stage {
+    name: String,
+    meta: HashMap<String, u32>,
+    sections: HashMap<String, u32>
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct Layout {
+    start: u32,
+    end: u32,
+    stages: Vec<Stage>
+}
+
+fn apply_template(temp_path: &str, apply_file: &str) {
+    let temp = std::fs::read_to_string(temp_path).unwrap();
+    let temp: Layout = serde_yaml::from_str(&temp).unwrap();
+    
+    let mut sub_map: HashMap<String, HashMap<String, u32>> = HashMap::new();
+    for stage in temp.stages {
+        let mut key_map = HashMap::new();
+
+        key_map.extend(stage.meta);
+        key_map.extend(stage.sections);
+        
+        sub_map.insert(stage.name, key_map);
+    }
+
+    let src = std::fs::read_to_string(apply_file).unwrap();
+    let reg = Handlebars::new();
+    let res = reg.render_template(&src, &sub_map).unwrap();
+
+    std::fs::write(apply_file.trim_end_matches(".temp"), res).unwrap();
+}
+
+fn build_all(stages: &[&str]) {
     let cargo_path = env::var("CARGO").expect("Missing CARGO environment variable");
     let cargo = Path::new(&cargo_path);
     let llvm_tools = LlvmTools::new().expect("LLVM tools not found");
@@ -20,36 +72,21 @@ fn main() {
     let target_dir_rel = manifest_dir.join("target");
     let target_dir = current_dir.join(target_dir_rel);
 
-    // build stage 1st
-    let stage_1st_dir = manifest_dir.join("src/bios/stage_1");
-    let stage_1st_triple = stage_1st_dir.join("target.json");
-    build_subproject(
-        &stage_1st_dir,
-        &stage_1st_triple,
-        &target_dir,
-        &objcopy,
-        &cargo,
-    );
+    let build_stage = |stage_dir: &str| {
+        let stage_dir = manifest_dir.join(stage_dir);
+        let stage_triple = stage_dir.join("target.json");
+        build_subproject(
+            &stage_dir,
+            &stage_triple,
+            &target_dir,
+            &objcopy,
+            &cargo,
+        );
+    };
 
-    let stage_2st_dir = manifest_dir.join("src/bios/stage_2");
-    let stage_2st_triple = stage_2st_dir.join("target.json");
-    build_subproject(
-        &stage_2st_dir,
-        &stage_2st_triple,
-        &target_dir,
-        &objcopy,
-        &cargo,
-    );
-
-    let stage_3rd_dir = manifest_dir.join("src/bios/stage_3");
-    let stage_3rd_triple = stage_3rd_dir.join("target.json");
-    build_subproject(
-        &stage_3rd_dir,
-        &stage_3rd_triple,
-        &target_dir,
-        &objcopy,
-        &cargo,
-    );
+    for stage in stages {
+        build_stage(stage)
+    }
 }
 
 fn build_subproject(

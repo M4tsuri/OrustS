@@ -1,16 +1,28 @@
 ENTRY(_start);
 
 SECTIONS {
-    .body 65536 : {  
+    {{#with stage3}}
+    .body {{body}} : {  
         KEEP(*(.startup)) 
         KEEP(*(.real))
         KEEP(*(.stage_3))
         *(.text*)
     }
-    .data 524288 : {
+    .data {{data}} : {
         *(.rodata*)
         *(.data*)
         *(.bss*)
     }
+    {{/with}}
+
+    {{#with sys}}
+    .sys.ldt {{ldt}} : {
+        KEEP(*(.sys.ldt))
+    }
+    .sys.tss {{tss}} : {
+        KEEP(*(.sys.tss))
+    }
+    {{/with}}
+
     /DISCARD/ : { *(.eh_frame*) *(.discard)}
 }
