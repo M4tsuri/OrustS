@@ -51,7 +51,7 @@ fn init_protect() {
 }
 
 fn main() -> Result<(), &'static str> {
-    let mut task = Task::new(Privilege::Ring0, tmp as u32, 0x1000)?;
+    let mut task = Task::new(Privilege::Ring0, tmp as u32, 0x10000);
     task.init_ldt()?;
     task.transfer();
     Ok(())

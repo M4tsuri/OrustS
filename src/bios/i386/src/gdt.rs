@@ -47,7 +47,7 @@ static GDT_TABLE: [u64; GDT_LEN as usize] = [
     // so s_type bit is clear.
     // See *Intel Developer Manual 3-14 Vol. 3A* for perm field definitions.
     pack_dt(LDT_START, LDT_SIZE - 1, SEG_LDT, TYPE_SYS, 
-        Privilege::Ring0 as u8, 1, 0b100, 0)
+        Privilege::Ring0 as u8, 1, 0b000, 0)
 ];
 
 /// An instance of GDT descriptor, occupying 6 bytes in memory.
