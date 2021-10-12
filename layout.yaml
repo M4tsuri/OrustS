@@ -20,15 +20,15 @@ stages:
       entry: 0x10000
     sections:
       body: 0x10000
-      ldt: 0x7d000
-      tss: 0x7f000
-      data: 0x80000
+      ldt: 0x78000
+      tss: 0x79000
+      data: 0x7a000
   - name: "global"
     meta: 
-      start: 0x90000
+      start: 0x80000
     sections:
-      heap: 0x90000 # a global heap
-      switch: 0xa0000
-      stack_top: 0xa1000
-      stack_but: 0xb0000
+      heap: 0x80000 # a global heap
+      switch: 0x8f000
+      stack_top: 0x90000
+      stack_but: 0xa0000
       video: 0xb8000

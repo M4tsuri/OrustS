@@ -8,19 +8,18 @@ SECTIONS {
         KEEP(*(.stage_3))
         *(.text*)
     }
+
+    .ldt {{ldt}} : {
+        KEEP(*(.ldt))
+    }
+    .tss {{tss}} : {
+        KEEP(*(.tss))
+    }
+    
     .data {{data}} : {
         *(.rodata*)
         *(.data*)
         *(.bss*)
-    }
-    {{/with}}
-
-    {{#with sys}}
-    .sys.ldt {{ldt}} : {
-        KEEP(*(.sys.ldt))
-    }
-    .sys.tss {{tss}} : {
-        KEEP(*(.sys.tss))
     }
     {{/with}}
 

@@ -7,7 +7,15 @@ SECTIONS {
         KEEP(*(.stage_3))
         *(.text*)
     }
-    .data 524288 : {
+
+    .ldt 491520 : {
+        KEEP(*(.ldt))
+    }
+    .tss 495616 : {
+        KEEP(*(.tss))
+    }
+    
+    .data 499712 : {
         *(.rodata*)
         *(.data*)
         *(.bss*)

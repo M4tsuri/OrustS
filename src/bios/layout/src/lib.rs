@@ -11,17 +11,17 @@ pub const NORMAL_END: u32 = NORMAL_START + NORMAL_SIZE;
 
 
 pub const CODE_START: u32 = 0;
-pub const CODE_END: u32 = 512000;
+pub const CODE_END: u32 = 491520;
 
-pub const LDT_START: u32 = 512000;
-pub const LDT_END: u32 = 520192;
+pub const LDT_START: u32 = 491520;
+pub const LDT_END: u32 = 495616;
 
-pub const DATA_START: u32 = 524288;
+pub const DATA_START: u32 = 499712;
 /// STAGE 3 ends here
-pub const DATA_END: u32 = 659456;
+pub const DATA_END: u32 = 589824;
 
-pub const STACK_START: u32 = 659456;
-pub const STACK_END: u32 = 720896;
+pub const STACK_START: u32 = 589824;
+pub const STACK_END: u32 = 655360;
 
 pub const VIDEO_START: u32 = 753664;
 /// 80x25 16 bit text mode 
@@ -37,7 +37,7 @@ pub const STAGE1_END: u32 = 32256;
 pub const STAGE2_START: u32 = 32256;
 pub const STAGE2_END: u32 = 65536;
 pub const STAGE3_START: u32 = 65536;
-pub const STAGE3_END: u32 = 589824;
+pub const STAGE3_END: u32 = 524288;
 pub const REAL_MODE_MAX_ADDRESS: u32 = 0x100000;
 pub const STAGE1_SIZE: u32 = STAGE1_END - STAGE1_START;
 pub const STAGE2_SIZE: u32 = STAGE2_END - STAGE2_START;
