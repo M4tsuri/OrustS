@@ -22,6 +22,8 @@ pub fn to_protect() {
         
         // 3. Set PE flag in control register CR0, which activates segmentation.
         //    If needed, set PG flag for paging.
+        //    Set CR0.PG = 1 and CR4.PAE = 0 (origin value) for 32-bit paging.
+        //    See *Intel Developer Manual Vol. 3A 4-3*
         asm! {
             "mov eax, cr0",
             "or eax, 1",
