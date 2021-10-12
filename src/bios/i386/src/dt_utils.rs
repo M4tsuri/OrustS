@@ -15,6 +15,23 @@ pub struct GDTDescriptor {
 
 unsafe impl Sync for GDTDescriptor {}
 
+/// type field enums
+pub const SEG_CODE: u8 = 0b1000;
+pub const SEGD_DOWN: u8 = 0b0100;
+pub const SEGD_WRITE: u8 = 0b0010;
+pub const SEG_ACCESSED: u8 = 0b0001;
+
+pub const SEGC_CONFORM: u8 = 0b0100;
+pub const SEGC_READ: u8 = 0b0010;
+
+pub const SEG_LDT: u8 = 2;
+
+/// S flags
+/// system management segment 
+pub const TYPE_SYS: u8 = 0;
+/// code or data segment
+pub const TYPE_CD: u8 = 1;
+
 /// Pack data in parameter to a valid GDT entry.
 /// A GDT entry can be represented as a 64 bit value, whose fields are defined as follows:
 ///

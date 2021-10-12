@@ -1,4 +1,4 @@
-use crate::dt_utils::{DTType, GDTDescriptor, pack_dt, pack_selector};
+use crate::dt_utils::{DTType, GDTDescriptor, SEGC_READ, SEGD_DOWN, SEGD_WRITE, SEG_CODE, SEG_LDT, TYPE_CD, TYPE_SYS, pack_dt, pack_selector};
 use crate::ring::Privilege;
 use layout::*;
 
@@ -15,17 +15,19 @@ static GDT_TABLE: [u64; GDT_LEN as usize] = [
     pack_dt(0, 0, 0, 0, 
         Privilege::Ring0 as u8, 0, 0, 0), 
     // Code Segment, 512KiB, code execute-only
-    pack_dt(CODE_START, CODE_SIZE - 1, 8, 1, 
-        Privilege::Ring0 as u8, 1, 0b101, 0),
+    pack_dt(0, CODE_END - 1, SEG_CODE | SEGC_READ, TYPE_CD, 
+        Privilege::Ring0 as u8, 1, 0b100, 0),
     // Data Segment, 112KiB, data Read/Write,accessed
-    pack_dt(DATA_START, DATA_SIZE - 1, 3, 1, 
-        Privilege::Ring0 as u8, 1, 0b001, 0),
-    // Stack Segment, 112KiB, grow down
-    pack_dt(STACK_START, STACK_SIZE - 1, 7, 1, 
-        Privilege::Ring0 as u8, 1, 0b011, 0),
+    pack_dt(0, DATA_END - 1, SEGD_WRITE, TYPE_CD, 
+        Privilege::Ring0 as u8, 1, 0b100, 0),
+    // Stack Segment, 112KiB, grow down, note for a grow down segment, 
+    // available offset ranges from limit + 1 to 0xffffffff (or 0xffff)
+    // so decrease limit allocates new memory for this segment.
+    pack_dt(0, STACK_START, SEGD_DOWN | SEGD_WRITE, TYPE_CD,
+        Privilege::Ring0 as u8, 1, 0b100, 0),
     // Video RAM
-    pack_dt(VIDEO_START, VIDEO_SIZE - 1, 3, 1, 
-        Privilege::Ring0 as u8, 1, 0b001, 0), 
+    pack_dt(VIDEO_START, VIDEO_SIZE - 1, SEGD_WRITE, TYPE_CD, 
+        Privilege::Ring0 as u8, 1, 0b100, 0), 
     // A normal segment for executing code to switch to real mode in protect mode.
     // We make a far jump to code in this segment in protect mode to load cs register
     // with a segment descriptor with suitable limit and other attributes.
@@ -34,18 +36,18 @@ static GDT_TABLE: [u64; GDT_LEN as usize] = [
     // 2. A small segment with limit of 0FFFFh
     //    i.e. max limit is 0FFFFh to meet real mode addressing limitations
     // 3. Start at 0 to make logical address and linear address consistent.
-    pack_dt(NORMAL_START, NORMAL_SIZE - 1, 10, 1, 
+    pack_dt(0, NORMAL_END - 1, SEGC_READ | SEG_CODE, TYPE_CD, 
         Privilege::Ring0 as u8, 1, 0b000, 0),
     // A normal segment for mode switching, this is a 16 bit writable data segment.
     // This segment overlaps with the previous one to meet the real mode unsegmented model.
     // The descriptor of this segment will be loaded to ss, es, fs, gs, ds after entering real mode.
-    pack_dt(NORMAL_START, NORMAL_SIZE - 1, 2, 1, 
+    pack_dt(0, NORMAL_END - 1, SEGD_WRITE, TYPE_CD, 
         Privilege::Ring0 as u8, 1, 0b000, 0),
     // Segment for LDT, note this descriptor is system management descriptor,
     // so s_type bit is clear.
     // See *Intel Developer Manual 3-14 Vol. 3A* for perm field definitions.
-    pack_dt(LDT_START, LDT_SIZE - 1, 2, 0, 
-        Privilege::Ring0 as u8, 1, 0b000, 0)
+    pack_dt(LDT_START, LDT_SIZE - 1, SEG_LDT, TYPE_SYS, 
+        Privilege::Ring0 as u8, 1, 0b100, 0)
 ];
 
 /// An instance of GDT descriptor, occupying 6 bytes in memory.
