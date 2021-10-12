@@ -4,8 +4,8 @@ use i386::gdt::GDTSelector;
 /// For details of the switching, see 
 /// *Intel Developer Manual 9-14 Vol. 3A 9.9.2 Switching Back to Real-Address Mode*
 
-
 /// Switch to real mode. 
+#[inline]
 pub fn to_real(target_offset: u16) {
     unsafe {
         // TODO 1. Disable interrupts. Due to a strange bug, we did not enable it after entering
@@ -37,28 +37,22 @@ unsafe fn _to_real() {
         "mov es, ax",
         "mov fs, ax",
         "mov gs, ax",
-        normal = const GDTSelector::NORMAL as u8
-    }
-
-    // 5. clear cr0.PE to enter real address mode
-    asm! {
+        // 5. clear cr0.PE to enter real address mode
         "mov eax, cr0",
         "and eax, 0xfffe",
-        "mov cr0, eax"
-    }
-
-    // 6. Execute a far jump to a real address mode program. This also sets the cs register
-    asm! {
-    // 7. load segment registers
+        "mov cr0, eax",
+        // 6. load segment registers
         "xor ax, ax",
         "mov ss, ax",
         "mov ds, ax",
         "mov fs, ax",
         "mov es, ax",
         "mov sp, 0x7b00",
+        // 7. Execute a far jump to a real address mode program. This also sets the cs register
         "push 0",
         "push dx",
-        "retf"
+        "retf",
+        normal = const GDTSelector::NORMAL as u8
     }
 }
 
