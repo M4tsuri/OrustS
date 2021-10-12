@@ -50,8 +50,11 @@ fn init_protect() {
     }
 }
 
+/// The main function of stage 3. 
+/// This function should collect all possible errors so we can deal with them in _start.
 fn main() -> Result<(), &'static str> {
-    let mut task = Task::new(Privilege::Ring0, tmp as u32, 0x10000);
+    // just a test here
+    let mut task = Task::new(Privilege::Ring0, tmp as u32, 0x1000);
     task.init_ldt()?;
     task.transfer();
     Ok(())
@@ -75,6 +78,7 @@ fn _start() -> ! {
     loop {}
 }
 
+/// A function for testing task switching, just print a "L" at row 10, col 0.
 fn tmp() -> ! {
     display_at(10, 0, "L");
     loop {}

@@ -15,6 +15,11 @@ pub struct Task {
 }
 
 impl Task {
+    /// In this function, we dynamically add new entry to LDT and get the corresponding
+    /// selector.
+    /// Currently this functions is only a Proof-of-Concept, 
+    /// maybe we won't use is afterwards.
+    /// **Note we did not reset the LDT.**
     pub fn init_ldt(&mut self) -> Result<(), &'static str> {
         let code_desc = pack_dt(self.offset, self.size - 1, 8, 1, 
             Privilege::Ring0 as u8, 1, 0b100, 0);
@@ -22,6 +27,8 @@ impl Task {
         Ok(())
     }
 
+    /// Transfer control to the target task, currently is only a demo.
+    /// TODO: transfer control with the help of TSS
     pub fn transfer(&self) {
         unsafe {
             asm! {
@@ -36,7 +43,7 @@ impl Task {
         }
     }
 
-    /// Init a task from disk, user need to specify drive index, task offset and task size
+    /// Create a new object representing a task.
     pub fn new(privilege: Privilege, offset: u32, size: u32) -> Self {
         Self {
             privilege,
