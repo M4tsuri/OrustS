@@ -31,17 +31,12 @@ unsafe fn _to_real() {
     asm! {
         ".code16",
         "mov dx, ax",
-        "mov ax, {normal}",
-        "mov ss, ax",
-        "mov ds, ax",
-        "mov es, ax",
-        "mov fs, ax",
-        "mov gs, ax",
         // 5. clear cr0.PE to enter real address mode
         "mov eax, cr0",
         "and eax, 0xfffe",
         "mov cr0, eax",
         // 6. load segment registers
+        "mov ax, {normal}",
         "xor ax, ax",
         "mov ss, ax",
         "mov ds, ax",
