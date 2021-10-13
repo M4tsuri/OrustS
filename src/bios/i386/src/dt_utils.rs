@@ -32,6 +32,15 @@ pub const TYPE_SYS: u8 = 0;
 /// code or data segment
 pub const TYPE_CD: u8 = 1;
 
+/// available for system software use
+pub const ATTR_AVL: u8 = 0b001;
+/// 64bit code segment (IA-32e only)
+pub const ATTR_CODE64: u8 = 0b010;
+/// 32-bit segment
+pub const ATTR_SEG32: u8 = 0b100;
+/// 16-bit segment
+pub const ATTR_SEG16: u8 = 0b000;
+
 /// Pack data in parameter to a valid GDT entry.
 /// A GDT entry can be represented as a 64 bit value, whose fields are defined as follows:
 ///
