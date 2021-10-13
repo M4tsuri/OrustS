@@ -3,7 +3,7 @@ use layout::*;
 
 static MINEFEST_PATH: &str = "/Users/ctsinon/Projects/Orangs/bootloader";
 
-static STAGES: [(&str, u32); 3] = [
+static STAGES: [(&str, usize); 3] = [
     (&"target/stage_1/target/release/stage_1.bin", STAGE1_SIZE),
     (&"target/stage_2/target/release/stage_2.bin", STAGE2_SIZE),
     (&"target/stage_3/target/release/stage_3.bin", STAGE3_SIZE)
@@ -15,7 +15,7 @@ fn main() {
     let minefest_path = Path::new(MINEFEST_PATH);
     let target_path = minefest_path.join(TARGET_IMG);
 
-    let extract_stage = |stage_dir: &str, size: u32| {
+    let extract_stage = |stage_dir: &str, size: usize| {
         let stage_path = minefest_path.join(stage_dir);
         let mut stage_file = File::open(stage_path).unwrap();
         let mut tmp = vec![];

@@ -4,59 +4,59 @@
 /// It should only be used for protect-real mode switching.
 /// The base address and limit of this segment provides us with appreciated values 
 /// for mode switching and real mode addressing.
-pub const NORMAL_START: u32 = 0;
+pub const NORMAL_START: usize = 0;
 /// NORMAL size must be 0x10000.
-pub const NORMAL_SIZE: u32 = 0x10000;
-pub const NORMAL_END: u32 = NORMAL_START + NORMAL_SIZE;
+pub const NORMAL_SIZE: usize = 0x10000;
+pub const NORMAL_END: usize = NORMAL_START + NORMAL_SIZE;
 
 
-pub const CODE_START: u32 = 0;
+pub const CODE_START: usize = 0;
 {{#with stage3}}
-pub const CODE_END: u32 = {{ldt}};
+pub const CODE_END: usize = {{ldt}};
 
-pub const LDT_START: u32 = {{ldt}};
-pub const LDT_END: u32 = {{tss}};
+pub const LDT_START: usize = {{ldt}};
+pub const LDT_END: usize = {{tss}};
 
-pub const DATA_START: u32 = {{data}};
+pub const DATA_START: usize = {{data}};
 {{/with}}
 
 {{#with global}}
 /// STAGE 3 ends here
-pub const DATA_END: u32 = {{stack_top}};
+pub const DATA_END: usize = {{stack_top}};
 
-pub const STACK_START: u32 = {{stack_top}};
-pub const STACK_END: u32 = {{stack_but}};
+pub const STACK_START: usize = {{stack_top}};
+pub const STACK_END: usize = {{stack_but}};
 
-pub const VIDEO_START: u32 = {{video}};
+pub const VIDEO_START: usize = {{video}};
 /// 80x25 16 bit text mode 
-pub const VIDEO_SIZE: u32 = 80 * 25 * 2;
-pub const VIDEO_END: u32 = VIDEO_START + VIDEO_SIZE;
+pub const VIDEO_SIZE: usize = 80 * 25 * 2;
+pub const VIDEO_END: usize = VIDEO_START + VIDEO_SIZE;
 {{/with}}
 
-pub const CODE_SIZE: u32 = CODE_END - CODE_START;
-pub const DATA_SIZE: u32 = DATA_END - DATA_START;
-pub const STACK_SIZE: u32 = STACK_END - STACK_START;
-pub const LDT_SIZE: u32 = LDT_END - LDT_START;
+pub const CODE_SIZE: usize = CODE_END - CODE_START;
+pub const DATA_SIZE: usize = DATA_END - DATA_START;
+pub const STACK_SIZE: usize = STACK_END - STACK_START;
+pub const LDT_SIZE: usize = LDT_END - LDT_START;
 
 {{#with stage1}}
-pub const STAGE1_START: u32 = {{start}};
+pub const STAGE1_START: usize = {{start}};
 {{/with}}
 
 {{#with stage2}}
-pub const STAGE1_END: u32 = {{start}};
-pub const STAGE2_START: u32 = {{start}};
+pub const STAGE1_END: usize = {{start}};
+pub const STAGE2_START: usize = {{start}};
 {{/with}}
 
 {{#with stage3}}
-pub const STAGE2_END: u32 = {{start}};
-pub const STAGE3_START: u32 = {{start}};
+pub const STAGE2_END: usize = {{start}};
+pub const STAGE3_START: usize = {{start}};
 {{/with}}
 
 {{#with global}}
-pub const STAGE3_END: u32 = {{start}};
+pub const STAGE3_END: usize = {{start}};
 {{/with}}
 
-pub const REAL_MODE_MAX_ADDRESS: u32 = 0x100000;
-pub const STAGE1_SIZE: u32 = STAGE1_END - STAGE1_START;
-pub const STAGE2_SIZE: u32 = STAGE2_END - STAGE2_START;
-pub const STAGE3_SIZE: u32 = STAGE3_END - STAGE3_START;
+pub const REAL_MODE_MAX_ADDRESS: usize = 0x100000;
+pub const STAGE1_SIZE: usize = STAGE1_END - STAGE1_START;
+pub const STAGE2_SIZE: usize = STAGE2_END - STAGE2_START;
+pub const STAGE3_SIZE: usize = STAGE3_END - STAGE3_START;

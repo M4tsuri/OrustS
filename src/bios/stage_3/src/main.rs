@@ -54,7 +54,7 @@ fn init_protect() {
 /// This function should collect all possible errors so we can deal with them in _start.
 fn main() -> Result<(), &'static str> {
     // just a test here
-    let mut task = Task::new(Privilege::Ring0, tmp as u32, 0x1000);
+    let mut task = Task::new(Privilege::Ring0, tmp as usize, 0x1000);
     task.init_ldt()?;
     task.transfer();
     Ok(())

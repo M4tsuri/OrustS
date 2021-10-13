@@ -9,8 +9,8 @@ pub struct Task {
     /// privilege of the task
     privilege: Privilege,
     /// offset of this task in memory, currently a task has only a code segment
-    offset: u32,
-    size: u32,
+    offset: usize,
+    size: usize,
     code_selector: u16
 }
 
@@ -44,7 +44,7 @@ impl Task {
     }
 
     /// Create a new object representing a task.
-    pub fn new(privilege: Privilege, offset: u32, size: u32) -> Self {
+    pub fn new(privilege: Privilege, offset: usize, size: usize) -> Self {
         Self {
             privilege,
             offset,

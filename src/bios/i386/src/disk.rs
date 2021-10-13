@@ -45,7 +45,7 @@ impl DAP {
     /// - disk: (disk_id, start_lba)
     /// - buffer: (segment, offset)
     /// - len: length in bytes
-    pub const fn new(disk: (u8, u64), buffer: (u16, u16), len: u32) -> Self {
+    pub const fn new(disk: (u8, u64), buffer: (u16, u16), len: usize) -> Self {
         Self {
             self_size: 0x10,
             reserved: 0,
