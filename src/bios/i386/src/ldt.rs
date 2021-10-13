@@ -1,13 +1,25 @@
+use layout::LDT_SIZE;
+
+/// LDT is a method of isolating memoyr of tasks from each other.
+/// In protect mode, we need at least one GDT, which can be used by all tasks.
+/// However, if we want to add more restrictions for a specific task.
+/// We need to set a LDT for it and initialize its segment registers with
+/// corresponding LDT selectors.
+/// LDT can be considered as a sub-GDT, which lays in a seperated segment described by
+/// an entry in GDT (a GDT selector). Later when executing lldt instruction with this
+/// selector, the address and limit of LDT is loaded in LDTR register, which helps 
+/// eliminate address translating when accessing LDT.
+
 use crate::dt_utils::{DTType, pack_selector};
 use crate::ring::Privilege;
 
-/// Current max length is 0x100 / 8 = 32, which is specified in linker script in stage 2
-const LDT_LEN: u16 = 31;
+/// max length of LDT
+const LDT_LEN: usize = LDT_SIZE / 8;
 
 #[repr()]
 pub struct LDT {
     ldt: &'static mut [u64; LDT_LEN as usize],
-    cur: u16
+    cur: usize
 }
 
 unsafe impl Sync for LDT {}
@@ -24,7 +36,7 @@ pub static mut LDT_TABLE: LDT = LDT {
 
 impl LDT {
     pub fn reset(&mut self) {
-        self.ldt.fill(0);
+        self.ldt[0..self.cur].fill(0);
         self.cur = 0
     }
 
@@ -35,6 +47,6 @@ impl LDT {
         
         self.ldt[self.cur as usize] = entry;
         self.cur += 1;
-        Ok(pack_selector(self.cur - 1, DTType::LDT, ring))
+        Ok(pack_selector(self.cur as u16 - 1, DTType::LDT, ring))
     }
 }
