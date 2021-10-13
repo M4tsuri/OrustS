@@ -12,7 +12,6 @@ use i386::{gdt::GDTSelector, ring::Privilege};
 use layout::STACK_END;
 use task::Task;
 
-#[link_section = ".stage_3"]
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
     loop {}
@@ -53,6 +52,9 @@ fn init_protect() {
 /// The main function of stage 3. 
 /// This function should collect all possible errors so we can deal with them in _start.
 fn main() -> Result<(), &'static str> {
+    // switch to real mode and poweroff, just for illustrating our mode switching works.
+    crate::mode_switch::to_real(crate::mode_switch::poweroff as u16);
+
     // just a test here
     let mut task = Task::new(Privilege::Ring0, tmp as usize, 0x1000);
     task.init_ldt()?;
@@ -67,9 +69,6 @@ fn main() -> Result<(), &'static str> {
 fn _start() -> ! {
     init_protect();
     display_at(10, 0, "In Protect Mode Now.");
-
-    // switch to real mode and poweroff, just for illustrating our mode switching works.
-    // crate::mode_switch::to_real(crate::mode_switch::poweroff as u16);
     
     if let Err(msg) = main() {
         display_at(0, 0, msg);

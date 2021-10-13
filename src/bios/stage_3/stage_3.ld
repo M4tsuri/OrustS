@@ -1,10 +1,12 @@
 ENTRY(_start);
 
 SECTIONS {
-    .body 65536 : {  
-        KEEP(*(.startup)) 
+    .real 61440 : {
         KEEP(*(.real))
-        KEEP(*(.stage_3))
+    }
+
+    .body 65536 : {  
+        KEEP(*(.startup))
         *(.text*)
     }
 
@@ -14,7 +16,7 @@ SECTIONS {
     .tss 495616 : {
         KEEP(*(.tss))
     }
-    
+
     .data 499712 : {
         *(.rodata*)
         *(.data*)

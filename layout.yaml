@@ -16,9 +16,10 @@ stages:
       gdt: 0xef00
   - name: "stage3"
     meta:   
-      start: 0x10000
+      start: 0xf000
       entry: 0x10000
     sections:
+      real: 0xf000
       body: 0x10000
       ldt: 0x78000
       tss: 0x79000

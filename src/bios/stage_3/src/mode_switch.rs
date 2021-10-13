@@ -52,6 +52,7 @@ unsafe fn _to_real() {
         "push 0",
         "push dx",
         "retf",
+        ".code32",
         normal = const GDTSelector::NORMAL as u8
     }
 }
@@ -63,6 +64,7 @@ pub unsafe fn poweroff() {
         "mov ax, 0x5307",
         "mov bx, 0x0001",
         "mov cx, 0x0003",
-        "int 15h"
+        "int 15h",
+        ".code32"
     }
 }

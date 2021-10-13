@@ -17,7 +17,7 @@ SECTIONS {
     {{/with}}
 
     {{#with stage2}}
-    .stage2 {{start}} (NOLOAD) : { 
+    .stage2 {{entry}} (NOLOAD) : { 
         *(.stage_2) 
     }
     {{/with}}

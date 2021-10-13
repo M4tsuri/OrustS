@@ -2,10 +2,12 @@ ENTRY(_start);
 
 SECTIONS {
     {{#with stage3}}
-    .body {{body}} : {  
-        KEEP(*(.startup)) 
+    .real {{real}} : {
         KEEP(*(.real))
-        KEEP(*(.stage_3))
+    }
+
+    .body {{body}} : {  
+        KEEP(*(.startup))
         *(.text*)
     }
 
@@ -15,7 +17,7 @@ SECTIONS {
     .tss {{tss}} : {
         KEEP(*(.tss))
     }
-    
+
     .data {{data}} : {
         *(.rodata*)
         *(.data*)
