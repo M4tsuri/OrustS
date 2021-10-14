@@ -97,7 +97,6 @@ pub enum DTType {
 /// Pack attributes of a selector into the hardcoded selector.
 /// Note that **index is the entry index in 8-byte array**.
 /// For more information, see *Intel Developer Manual Vol. 3A 3-7 3.4.2 Segment Selectors*
-#[link_section = ".discard"]
 pub const fn pack_selector(index: u16, table: DTType, rpl: Privilege) -> u16 {
     let mut res = 0;
     res = mask_assign(res as u64, rpl as u64, 0, 0, 2) as u16;
