@@ -4,9 +4,9 @@ A legacy BIOS bootloader for Orust System, which is a rust implementation of Ora
 
 This bootloader is written in **pure rust**, i.e. no assembly file and all low-level operations are implemented with rust inline assembly.
 
-I tried my best to avoid magic numbers and add documentation for any confusing configuration. Compile-time generated data structures are used as many as possible so that you don't need to deal with annoying bitwise operations without the cost of runtime space and time.
+I tried my best to avoid magic numbers and add documentation for them when nessessary. Many data structures, for example, GDT, are generated at compile-time to avoid runtime cost (with nice abstraction).
 
-Some code are copied from https://github.com/o8vm/krabs.
+Some ideas come from https://github.com/o8vm/krabs.
 
 ## Dependency
 
@@ -24,6 +24,7 @@ with `rust-src` and `llvm-tools-preview` installed.
 
 ## Usage
 
-Run `cargo run`, then you will find the raw bootloader image under `target/bootloader.bin`. Run it with `qemu-system-i386 -drive format=raw,index=0,media=disk,file=target/bootloader.bin -vga std`.
+Run `cargo run`, then you will find the raw bootloader image at `target/bootloader.bin`. 
 
-If you want to debug, I recommend debug with gdb. Run `qemu-system-i386 -drive format=raw,index=0,media=disk,file=target/bootloader.bin -vga std -s -S` and `gdb` in **current** directory, then our `.gdbinit` script will automatically switch gdb to i8086 mode for real mode debugging and set a breakpoint at the entrypoint. After entering protect mode, you may want to run `set architecture i386` to go to i386 mode.
+- Run: `qemu-system-i386 -drive format=raw,index=0,media=disk,file=target/bootloader.bin -vga std`.
+- Debug: I recommend debug with gdb. Run `qemu-system-i386 -drive format=raw,index=0,media=disk,file=target/bootloader.bin -vga std -s -S` and attach gdb to it. Note if you want to debug real mode 8086 assembly, you need to add a description file with `set tdesc filename target.xml`.
