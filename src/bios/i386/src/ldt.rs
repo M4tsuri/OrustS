@@ -40,13 +40,13 @@ impl LDT {
         self.cur = 0
     }
 
-    pub fn add(&mut self, entry: u64, ring: Privilege) -> Result<u16, &'static str> {
+    pub fn add(&mut self, entry: u64) -> Result<u16, &'static str> {
         if self.cur >= LDT_LEN - 1 {
             return Err("LDT overflow.\n");
         }
         
         self.ldt[self.cur as usize] = entry;
         self.cur += 1;
-        Ok(pack_selector(self.cur as u16 - 1, DTType::LDT, ring))
+        Ok(self.cur as u16 - 1)
     }
 }

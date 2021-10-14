@@ -1,6 +1,6 @@
 use i386::ring::Privilege;
 use i386::ldt::LDT_TABLE;
-use i386::dt_utils::pack_dt;
+use i386::dt_utils::{pack_dt, pack_selector, DTType};
 use i386::gdt::GDTSelector;
 
 /// Represent a task.
@@ -23,7 +23,8 @@ impl Task {
     pub fn init_ldt(&mut self) -> Result<(), &'static str> {
         let code_desc = pack_dt(self.offset, self.size - 1, 8, 1, 
             Privilege::Ring0 as u8, 1, 0b100, 0);
-        self.code_selector = unsafe { LDT_TABLE.add(code_desc, Privilege::Ring0)? };
+        let idx = unsafe { LDT_TABLE.add(code_desc)? };
+        self.code_selector = pack_selector(idx, DTType::LDT, Privilege::Ring0);
         Ok(())
     }
 
