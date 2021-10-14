@@ -27,25 +27,31 @@ pub fn to_real(target_offset: u16) {
 #[no_mangle]
 #[link_section = ".real"]
 unsafe fn _to_real() {
-    // 4. Load segment registers
     asm! {
         ".code16",
-        "mov dx, ax",
+        "movzx edx, ax",
+        // 4. Load segment registers
+        "mov ax, {normal}",
+        "mov ss, ax",
+        "mov ds, ax",
+        "mov fs, ax",
+        "mov es, ax",
+        "mov gs, ax",
         // 5. clear cr0.PE to enter real address mode
         "mov eax, cr0",
         "and eax, 0xfffe",
         "mov cr0, eax",
         // 6. load segment registers
-        "mov ax, {normal}",
         "xor ax, ax",
         "mov ss, ax",
         "mov ds, ax",
         "mov fs, ax",
         "mov es, ax",
+        "mov gs, ax",
         "mov sp, 0x7b00",
         // 7. Execute a far jump to a real address mode program. This also sets the cs register
-        "push 0",
-        "push dx",
+        "push 0x00000000",
+        "push edx",
         "retf",
         ".code32",
         normal = const GDTSelector::NORMAL as u8
