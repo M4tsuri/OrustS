@@ -13,7 +13,8 @@ stages:
       entry: 0x7e00
     sections:
       body: 0x7e00 # stage 2 load address
-      gdt: 0xef00
+      gdt: 0xe000
+      gdt_desc: 0xef00
   - name: "stage3"
     meta:
       start: 0xf000
