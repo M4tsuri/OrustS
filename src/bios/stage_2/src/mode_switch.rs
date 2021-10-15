@@ -1,4 +1,4 @@
-use i386::gdt::{GDTSelector, GDT_DESCRIPTOR};
+use i386::dt::gdt::{GDTSelector, GDT_DESCRIPTOR};
 
 /// Transfer cpu mode from real mode to protect mode.
 /// Protect mode privides us with segmentation of physical address space (also called linear address space), 

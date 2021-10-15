@@ -1,19 +1,30 @@
 use crate::bitwise::mask_assign;
 use crate::ring::Privilege;
 
-/// A GDT Descriptor descriping the length of GDT and location of GDT in memory.
-/// The address of this describtor will be passed to lgdt instruction to fill GDT.
-///
-/// The `limit` field is the length of GDT **in bytes** - 1, which is used by processor 
-/// to find the last valid byte in GDT (see *Intel Developer Manual Vol. 3A 3-15*).
-#[repr(packed)]
-#[allow(improper_ctypes)]
-pub struct GDTDescriptor {
-    pub limit: u16,
-    pub base_address: *const u64
+#[repr()]
+pub struct DescriptorTable<const LEN: usize> {
+    pub table: &'static mut [u64; LEN],
+    pub cur: usize
 }
 
-unsafe impl Sync for GDTDescriptor {}
+unsafe impl<const LEN: usize> Sync for DescriptorTable<LEN> {}
+
+impl<const LEN: usize> DescriptorTable<LEN> {
+    pub fn reset(&mut self) {
+        self.table[0..self.cur].fill(0);
+        self.cur = 0
+    }
+
+    pub fn add(&mut self, entry: u64) -> Result<u16, &'static str> {
+        if self.cur >= LEN - 1 {
+            return Err("LDT overflow.\n");
+        }
+        
+        self.table[self.cur as usize] = entry;
+        self.cur += 1;
+        Ok(self.cur as u16 - 1)
+    }
+}
 
 /// type field enums
 pub const SEG_CODE: u8 = 0b1000;
@@ -28,14 +39,19 @@ pub const SEGD_WRITE: u8 = 0b0010;
 pub const SEG_ACCESSED: u8 = 0b0001;
 
 /// This flag determines whether this segment is conforming, 
-/// which means whether its allowed for execution with lower CPL 
+/// which means whether its allowed for task with lower privilege
 /// to jump into this segment. For a conforming code segment, this
 /// is allowed, and vice versa.
-/// Note that CPL is stored in the lowest 2 bits in CS and SS registers.
-/// Normally, CPL equals the DPL of the code segment where instructions
+/// Normally, CPL, which is stored in the lowest 2 bits in CS and SS registers,
+/// equals the DPL of the code segment where instructions
 /// are being fetched and thus changes correspondingly during task switching. 
 /// However, when switching to a conforming code segment, CPL will not
-/// be changed.
+/// be changed (even when DPL < CPL), which means no task switch occurs.
+/// Most code segments are nonconforming, i.e. only allow transfer from
+/// code segment with the same privilege (without using gates).
+/// However, we still need some code segments, for example, math libraries
+/// to be conforming to make them accessible for lower privileged code 
+/// while prevent them from accessing more privileged data.
 pub const SEGC_CONFORM: u8 = 0b0100;
 pub const SEGC_READ: u8 = 0b0010;
 
@@ -86,10 +102,10 @@ pub const ATTR_SEG16: u8 = 0b000;
 /// - For a data segment / TSS / Call Gate, only task with 
 /// CPL <= DPL (higher privilege) can be allowed to access this resource.
 /// - For a nonconforming code segment (without using a call gate), only
-/// task with CPL == DPL can access this segment.
+/// task with CPL == DPL can access this segment (with selector RPL <= DPL).
 /// - For a conforming code segment (or nonconforming code segment accessed 
 /// with call gate), only task with CPL >= DPL (lower privilege) can access
-/// this segment.
+/// this segment (selector RPL is not checked).
 /// 
 /// For the attributes field: 
 ///

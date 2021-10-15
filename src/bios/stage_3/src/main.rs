@@ -8,7 +8,7 @@ mod task;
 
 use core::panic::PanicInfo;
 use display::display_at;
-use i386::{gdt::GDTSelector, ring::Privilege};
+use i386::{dt::gdt::GDTSelector, ring::Privilege};
 use layout::STACK_END;
 use task::Task;
 
@@ -53,7 +53,7 @@ fn init_protect() {
 /// This function should collect all possible errors so we can deal with them in _start.
 fn main() -> Result<(), &'static str> {
     // switch to real mode and poweroff, just for illustrating our mode switching works.
-    crate::mode_switch::to_real(crate::mode_switch::poweroff as u16);
+    // crate::mode_switch::to_real(crate::mode_switch::poweroff as u16);
 
     // just a test here
     let mut task = Task::new(Privilege::Ring0, tmp as usize, 0x1000);

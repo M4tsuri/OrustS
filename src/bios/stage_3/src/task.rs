@@ -1,7 +1,7 @@
 use i386::ring::Privilege;
-use i386::ldt::LDT_TABLE;
-use i386::dt_utils::{pack_dt, pack_selector, DTType};
-use i386::gdt::GDTSelector;
+use i386::dt::ldt::LDT_TABLE;
+use i386::dt::utils::{pack_dt, pack_selector, DTType};
+use i386::dt::gdt::GDTSelector;
 
 /// Represent a task.
 /// Load and run a task with this struct.
