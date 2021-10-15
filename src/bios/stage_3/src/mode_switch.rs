@@ -24,6 +24,11 @@ pub fn to_real(target_offset: u16) {
     }
 }
 
+/// In fact, aftering entering protect mode, there is no such an option for 
+/// turning it off. However, we can pretend to turning it off by assign each 
+/// segment with ring 0 privilege. Note that after doing this, only privilege 
+/// checking is disabled, limit checking and type checking are still carried out.
+/// See *Intel Developer Manual Vol.3A 5-1*
 #[no_mangle]
 #[link_section = ".real"]
 unsafe fn _to_real() {

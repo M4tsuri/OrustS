@@ -17,10 +17,25 @@ unsafe impl Sync for GDTDescriptor {}
 
 /// type field enums
 pub const SEG_CODE: u8 = 0b1000;
+/// Determine whether a data segment expands down.
+/// For an expand down segment, the limit field of its GDT entry
+/// means the offset can range from limit + 1 to 0xffff/0xffffffff, 
+/// which makes it possible to change segment size dynamically 
+/// (especially for stack).
 pub const SEGD_DOWN: u8 = 0b0100;
 pub const SEGD_WRITE: u8 = 0b0010;
+/// Mainly for debug usage
 pub const SEG_ACCESSED: u8 = 0b0001;
 
+/// This flag determines whether this segment is conforming, 
+/// which means whether its allowed for execution with lower CPL 
+/// to jump into this segment. For a conforming code segment, this
+/// is allowed, and vice versa.
+/// Note that CPL is stored in the lowest 2 bits in CS and SS registers.
+/// Normally, CPL equals the DPL of the code segment where instructions
+/// are being fetched and thus changes correspondingly during task switching. 
+/// However, when switching to a conforming code segment, CPL will not
+/// be changed.
 pub const SEGC_CONFORM: u8 = 0b0100;
 pub const SEGC_READ: u8 = 0b0010;
 
@@ -50,7 +65,7 @@ pub const ATTR_SEG16: u8 = 0b000;
 /// | 32:40 | base[16:24]     |                             |
 /// | 40:44 | type[0:4]       | segment type and attributes |
 /// | 44:45 | s[0:1]          | system or data/code segment |
-/// | 45:47 | privilege[0:2]  | 0 = Kernel, 3 = User        |
+/// | 45:47 | privilege[0:2]  | DPL, 0 = Kernel, 3 = User   |
 /// | 47:48 | present[0:1]    | 1 = enable segment          |
 /// | 48:52 | limit[16:20]    |                             |
 /// | 52:55 | attributes[0:3] | segment attributes          |
@@ -64,7 +79,18 @@ pub const ATTR_SEG16: u8 = 0b000;
 /// |  C |  C |  R |  A |
 ///
 /// For the s field: clear if this is a system segment, set if this is a code/data segment 
-///
+/// 
+/// For the DPL field: Descriptor privilege level. Determines the 
+/// privilege level of this resource.
+///  
+/// - For a data segment / TSS / Call Gate, only task with 
+/// CPL <= DPL (higher privilege) can be allowed to access this resource.
+/// - For a nonconforming code segment (without using a call gate), only
+/// task with CPL == DPL can access this segment.
+/// - For a conforming code segment (or nonconforming code segment accessed 
+/// with call gate), only task with CPL >= DPL (lower privilege) can access
+/// this segment.
+/// 
 /// For the attributes field: 
 ///
 /// - 0: Available to System Programmers flag, reserved
@@ -96,6 +122,10 @@ pub enum DTType {
 
 /// Pack attributes of a selector into the hardcoded selector.
 /// Note that **index is the entry index in 8-byte array**.
+/// RPL here is is used for overriding CPL to prevent an privileged application from 
+/// requesing restricted resource on behalf a lower privileged application.
+/// When requestion resource with a selector, we always compare MAX(CPL, RPL) with
+/// DPL to decide whether to grant access.
 /// For more information, see *Intel Developer Manual Vol. 3A 3-7 3.4.2 Segment Selectors*
 pub const fn pack_selector(index: u16, table: DTType, rpl: Privilege) -> u16 {
     let mut res = 0;
