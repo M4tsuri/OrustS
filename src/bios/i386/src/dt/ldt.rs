@@ -1,5 +1,5 @@
 use layout::LDT_SIZE;
-use super::utils::DescriptorTable;
+use super::utils::{Descriptor, DescriptorTable};
 
 /// LDT is a method of isolating memoyr of tasks from each other.
 /// In protect mode, we need at least one GDT, which can be used by all tasks.
@@ -16,7 +16,7 @@ const LDT_MAX_LEN: usize = LDT_SIZE / 8;
 
 #[used]
 #[link_section = ".ldt"]
-static mut _LDT_TABLE: [u64; LDT_MAX_LEN] = [0; LDT_MAX_LEN];
+static mut _LDT_TABLE: [Descriptor; LDT_MAX_LEN] = [0; LDT_MAX_LEN];
 
 /// The LDT, Local Descriptor Table.
 pub static mut LDT_TABLE: DescriptorTable<LDT_MAX_LEN> = DescriptorTable {

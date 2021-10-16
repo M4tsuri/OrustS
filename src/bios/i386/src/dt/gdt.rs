@@ -1,4 +1,4 @@
-use super::utils::{ATTR_SEG16, ATTR_SEG32, DTType, DescriptorTable, SEGC_READ, SEGD_DOWN, SEGD_WRITE, SEG_CODE, SEG_LDT, TYPE_CD, TYPE_SYS, pack_seg, pack_selector};
+use super::utils::{ATTR_SEG16, ATTR_SEG32, DTType, Descriptor, DescriptorTable, SEGC_READ, SEGD_DOWN, SEGD_WRITE, SEG_CODE, SEG_LDT, TYPE_CD, TYPE_SYS, pack_seg, pack_selector};
 use crate::ring::Privilege;
 use layout::*;
 
@@ -11,7 +11,7 @@ use layout::*;
 #[allow(improper_ctypes)]
 pub struct GDTDescriptor {
     pub limit: u16,
-    pub base_address: &'static [u64; GDT_MAX_LEN]
+    pub base_address: &'static [Descriptor; GDT_MAX_LEN]
 }
 
 unsafe impl Sync for GDTDescriptor {}
@@ -54,25 +54,25 @@ const fn init_gdt() -> [u64; GDT_MAX_LEN] {
     // An empty entry (Null Segment) which is reserved by Intel
     gdt[0] = pack_seg(0, 0, 
         0, 0, 
-        Privilege::Ring0 as u8, 0, 0, 0);
+        Privilege::Ring0, false, 0, 0);
     // Code Segment, 512KiB, code execute and read
     gdt[1] = pack_seg(0, CODE_END - 1, 
         SEG_CODE | SEGC_READ, TYPE_CD, 
-        Privilege::Ring0 as u8, 1, ATTR_SEG32, 0);
+        Privilege::Ring0, true, ATTR_SEG32, 0);
     // Data Segment, 112KiB, data Read/Write,accessed
     gdt[2] = pack_seg(0, DATA_END - 1, 
         SEGD_WRITE, TYPE_CD, 
-        Privilege::Ring0 as u8, 1, ATTR_SEG32, 0);
+        Privilege::Ring0, true, ATTR_SEG32, 0);
     // Stack Segment, 112KiB, grow down, note for a grow down segment, 
     // available offset ranges from limit + 1 to 0xffffffff (or 0xffff)
     // so decrease limit allocates new memory for this segment.
     gdt[3] = pack_seg(0, STACK_START, 
         SEGD_DOWN | SEGD_WRITE, TYPE_CD,
-        Privilege::Ring0 as u8, 1, ATTR_SEG32, 0);
+        Privilege::Ring0, true, ATTR_SEG32, 0);
     // Video RAM
     gdt[4] = pack_seg(VIDEO_START, VIDEO_SIZE - 1, 
         SEGD_WRITE, TYPE_CD, 
-        Privilege::Ring0 as u8, 1, ATTR_SEG32, 0);
+        Privilege::Ring0, true, ATTR_SEG32, 0);
     // A normal segment for executing code to switch to real mode in protect mode.
     // We make a far jump to code in this segment in protect mode to load cs register
     // with a segment descriptor with suitable limit and other attributes.
@@ -83,19 +83,19 @@ const fn init_gdt() -> [u64; GDT_MAX_LEN] {
     // 3. Start at 0 to make logical address and linear address consistent.
     gdt[5] = pack_seg(0, NORMAL_END - 1, 
         SEGC_READ | SEG_CODE, TYPE_CD, 
-        Privilege::Ring0 as u8, 1, ATTR_SEG16, 0);
+        Privilege::Ring0, true, ATTR_SEG16, 0);
     // A normal segment for mode switching, this is a 16 bit writable data segment.
     // This segment overlaps with the previous one to meet the real mode unsegmented model.
     // The descriptor of this segment will be loaded to ss, es, fs, gs, ds after entering real mode.
     gdt[6] = pack_seg(0, NORMAL_END - 1, 
         SEGD_WRITE, TYPE_CD, 
-        Privilege::Ring0 as u8, 1, ATTR_SEG16, 0);
+        Privilege::Ring0, true, ATTR_SEG16, 0);
     // Segment for LDT, note this descriptor is system management descriptor,
     // so s_type bit is clear.
     // See *Intel Developer Manual 3-14 Vol. 3A* for perm field definitions.
     gdt[7] = pack_seg(LDT_START, LDT_SIZE - 1, 
         SEG_LDT, TYPE_SYS, 
-        Privilege::Ring0 as u8, 1, 0b000, 0);
+        Privilege::Ring0, true, 0b000, 0);
     gdt
 }
 
@@ -103,7 +103,7 @@ const fn init_gdt() -> [u64; GDT_MAX_LEN] {
 /// The address of GDT should be 8 byte aligned to get better performance (see *Intel Developer Manual Vol. 3A 3-15*).
 #[used]
 #[link_section = ".gdt"]
-static mut _GDT_TABLE: [u64; GDT_MAX_LEN] = init_gdt();
+static mut _GDT_TABLE: [Descriptor; GDT_MAX_LEN] = init_gdt();
 
 /// An instance of GDT descriptor, occupying 6 bytes in memory.
 /// The `limit` field is the length of GDT **in bytes** - 1, which is used by processor 

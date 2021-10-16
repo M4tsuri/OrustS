@@ -22,7 +22,7 @@ impl Task {
     /// **Note we did not reset the LDT.**
     pub fn init_ldt(&mut self) -> Result<(), &'static str> {
         let code_desc = pack_seg(self.offset, self.size - 1, 8, 1, 
-            Privilege::Ring0 as u8, 1, 0b100, 0);
+            Privilege::Ring0, true, 0b100, 0);
         let idx = unsafe { LDT_TABLE.add(code_desc)? };
         self.code_selector = pack_selector(idx, DTType::LDT, Privilege::Ring0);
         Ok(())
