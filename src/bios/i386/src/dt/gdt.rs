@@ -11,7 +11,7 @@ use layout::*;
 #[allow(improper_ctypes)]
 pub struct GDTDescriptor {
     pub limit: u16,
-    pub base_address: *const u64
+    pub base_address: &'static [u64; GDT_MAX_LEN]
 }
 
 unsafe impl Sync for GDTDescriptor {}
@@ -114,8 +114,15 @@ static mut _GDT_TABLE: [u64; GDT_MAX_LEN] = init_gdt();
 #[link_section = ".gdt_desc"]
 pub static mut GDT_DESCRIPTOR: GDTDescriptor = GDTDescriptor {
     limit: GDT_RESERVED_LEN as u16 * 8 - 1,
-    base_address: unsafe { _GDT_TABLE.as_ptr() }
+    base_address: unsafe { &_GDT_TABLE }
 };
+
+impl GDTDescriptor {
+    pub fn update(&mut self, src: &'static DescriptorTable<GDT_MAX_LEN>) {
+        self.limit = src.cur as u16 * 8 - 1;
+        self.base_address = src.table
+    }
+}
 
 pub static mut GDT_TABLE: DescriptorTable<GDT_MAX_LEN> = DescriptorTable {
     table: unsafe { &mut _GDT_TABLE },
