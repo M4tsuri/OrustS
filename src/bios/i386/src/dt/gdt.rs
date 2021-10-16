@@ -118,12 +118,19 @@ pub static mut GDT_DESCRIPTOR: GDTDescriptor = GDTDescriptor {
 };
 
 impl GDTDescriptor {
+    /// Update the gdt descriptor and then update gdtr.
+    /// This function should be called in a task with CPL of ring 0.
     pub fn update(&mut self, src: &'static DescriptorTable<GDT_MAX_LEN>) {
         self.limit = src.cur as u16 * 8 - 1;
-        self.base_address = src.table
+        self.base_address = src.table;
+        unsafe {
+            asm!("lgdt {}", sym GDT_DESCRIPTOR)
+        }
     }
 }
 
+/// A wrapper for GDT, we use this wrapper to dynamically change the content of
+/// GDT, thus gives us more extensibility.
 pub static mut GDT_TABLE: DescriptorTable<GDT_MAX_LEN> = DescriptorTable {
     table: unsafe { &mut _GDT_TABLE },
     cur: GDT_RESERVED_LEN
