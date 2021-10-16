@@ -1,6 +1,9 @@
 use crate::bitwise::mask_assign;
 use crate::ring::Privilege;
 
+pub type Selector = u16;
+pub type Descriptor = u64;
+
 #[repr()]
 pub struct DescriptorTable<const LEN: usize> {
     pub table: &'static mut [u64; LEN],
@@ -56,6 +59,8 @@ pub const SEGC_CONFORM: u8 = 0b0100;
 pub const SEGC_READ: u8 = 0b0010;
 
 pub const SEG_LDT: u8 = 2;
+/// 32-bit call gate
+pub const SEG_CALL_GATE32: u8 = 12;
 
 /// S flags
 /// system management segment 
@@ -114,8 +119,8 @@ pub const ATTR_SEG16: u8 = 0b000;
 /// - 2: size bit, set if our code is 32-bit, 16-bit vice versa
 ///
 /// For granularity, CPU will multiply our limit by 4KB if this bit is set.
-pub const fn pack_seg(base: usize, limit: usize, perm: u8, s_type: u8, privilege: u8, present: u8, attrs: u8, granularity: u8) -> u64 {
-    let mut res: u64 = 0x0;
+pub const fn pack_seg(base: usize, limit: usize, perm: u8, s_type: u8, privilege: Privilege, present: bool, attrs: u8, granularity: u8) -> Descriptor {
+    let mut res: Descriptor = 0x0;
     res = mask_assign(res, limit as u64, 0, 0, 16);
     res = mask_assign(res, base as u64, 16, 0, 24);
     res = mask_assign(res, perm as u64, 40, 0, 4);
@@ -126,6 +131,28 @@ pub const fn pack_seg(base: usize, limit: usize, perm: u8, s_type: u8, privilege
     res = mask_assign(res, attrs as u64, 52, 0, 3);
     res = mask_assign(res, granularity as u64, 55, 0, 1);
     res = mask_assign(res, base as u64, 56, 24, 8);
+    res
+}
+
+/// This function packs a call gate descirptor from given attributes.
+/// - seg: the selector of target code segment
+/// - entry: the offset of entrypoint in target code segment 
+/// - dpl: the privilege needed to invoke this call gate
+/// - param_cnt: the count of parameters
+/// - valid: whether this call gate is enabled
+/// 
+/// For more information, see *Intel Developer Manual Vol. 3A 5-13*
+pub const fn pack_call_gate(seg: Selector, entry: usize, dpl: Privilege, param_cnt: u8, valid: bool) -> Descriptor {
+    let mut res: Descriptor = 0x0;
+    res = mask_assign(res, entry as u64, 0, 0, 16);
+    res = mask_assign(res, seg as u64, 16, 0, 16);
+    res = mask_assign(res, param_cnt as u64, 32, 0, 5);
+    res = mask_assign(res, 0 as u64, 37, 0, 3);
+    res = mask_assign(res, SEG_CALL_GATE32 as u64, 40, 0, 4);
+    res = mask_assign(res, 0 as u64, 44, 0, 1);
+    res = mask_assign(res, dpl as u64, 45, 0, 2);
+    res = mask_assign(res, valid as u64, 47, 0, 1);
+    res = mask_assign(res, entry as u64, 48, 16, 16);
     res
 }
 
@@ -143,7 +170,7 @@ pub enum DTType {
 /// When requestion resource with a selector, we always compare MAX(CPL, RPL) with
 /// DPL to decide whether to grant access.
 /// For more information, see *Intel Developer Manual Vol. 3A 3-7 3.4.2 Segment Selectors*
-pub const fn pack_selector(index: u16, table: DTType, rpl: Privilege) -> u16 {
+pub const fn pack_selector(index: u16, table: DTType, rpl: Privilege) -> Selector {
     let mut res = 0;
     res = mask_assign(res as u64, rpl as u64, 0, 0, 2) as u16;
     res = mask_assign(res as u64, table as u64, 2, 0, 1) as u16;
