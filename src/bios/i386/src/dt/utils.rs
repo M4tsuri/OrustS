@@ -61,6 +61,8 @@ pub const SEGC_READ: u8 = 0b0010;
 pub const SEG_LDT: u8 = 2;
 /// 32-bit call gate
 pub const SEG_CALL_GATE32: u8 = 12;
+/// 32 bit avaliable tss
+pub const SEG_AVAIL_TSS32: u8 = 9;
 
 /// S flags
 /// system management segment 
@@ -119,7 +121,7 @@ pub const ATTR_SEG16: u8 = 0b000;
 /// - 2: size bit, set if our code is 32-bit, 16-bit vice versa
 ///
 /// For granularity, CPU will multiply our limit by 4KB if this bit is set.
-pub const fn pack_seg(base: usize, limit: usize, perm: u8, s_type: u8, privilege: Privilege, present: bool, attrs: u8, granularity: u8) -> Descriptor {
+pub const fn pack_desc(base: usize, limit: usize, perm: u8, s_type: u8, privilege: Privilege, present: bool, attrs: u8, granularity: u8) -> Descriptor {
     let mut res: Descriptor = 0x0;
     res = mask_assign(res, limit as u64, 0, 0, 16);
     res = mask_assign(res, base as u64, 16, 0, 24);
@@ -132,6 +134,22 @@ pub const fn pack_seg(base: usize, limit: usize, perm: u8, s_type: u8, privilege
     res = mask_assign(res, granularity as u64, 55, 0, 1);
     res = mask_assign(res, base as u64, 56, 24, 8);
     res
+}
+
+/// Pack a TSS descriptor.
+/// - base: base address of the segment with tss in it
+/// - limit: max allowed offset in the segment
+/// - dpl: the least privilege (CPL) required for dispatching the task indeciated by this tss
+/// - present: whether this segment is enabled
+/// - busy: set if the corresponding task is running / suspended
+/// - avl: available for system software use, never mind
+/// - granulatity: multiple limit by 4k if set
+/// 
+/// For more information, see *Intel Developer Manual Vol. 3A 7-6*
+pub const fn pack_tss_desc(base: usize, limit: usize, dpl: Privilege, present: bool, busy: bool, avl: bool, granularity: u8) -> Descriptor {
+    let perm = SEG_AVAIL_TSS32 | ((busy as u8) << 1);
+    let attrs = 0b000 | (avl as u8);
+    pack_desc(base, limit, perm, TYPE_SYS, dpl, present, attrs, granularity)
 }
 
 /// This function packs a call gate descirptor from given attributes.
@@ -177,3 +195,5 @@ pub const fn pack_selector(index: u16, table: DTType, rpl: Privilege) -> Selecto
     res = mask_assign(res as u64, index as u64, 3, 0, 13) as u16;
     res
 }
+
+
