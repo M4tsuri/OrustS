@@ -63,6 +63,8 @@ pub const SEG_LDT: u8 = 2;
 pub const SEG_CALL_GATE32: u8 = 12;
 /// 32 bit avaliable tss
 pub const SEG_AVAIL_TSS32: u8 = 9;
+/// task gate
+pub const SEG_TASK_GATE: u8 = 5;
 
 /// S flags
 /// system management segment 
@@ -145,11 +147,32 @@ pub const fn pack_desc(base: usize, limit: usize, perm: u8, s_type: u8, privileg
 /// - avl: available for system software use, never mind
 /// - granulatity: multiple limit by 4k if set
 /// 
+/// **Be aware that TSS descriptor can only be located in GDT**
 /// For more information, see *Intel Developer Manual Vol. 3A 7-6*
 pub const fn pack_tss_desc(base: usize, limit: usize, dpl: Privilege, present: bool, busy: bool, avl: bool, granularity: u8) -> Descriptor {
     let perm = SEG_AVAIL_TSS32 | ((busy as u8) << 1);
     let attrs = 0b000 | (avl as u8);
     pack_desc(base, limit, perm, TYPE_SYS, dpl, present, attrs, granularity)
+}
+
+/// Pack a task gate descriptor.
+/// Task gates provide indirect access to TSS descriptor from GDT / LDT / IDT.
+/// 
+/// - tss_desc: the target tss descriptor in GDT
+/// - dpl: the lowest privilege required to access this task gate. Note that when 
+/// DPL of task gate is used for privilege validating, the DPL of target TSS descriptor
+/// is not used.
+/// - present: whether this descriptor is enabled.
+/// 
+/// We need task gates for the following needs:
+/// - Since the busy flag only locates at TSS descriptor, we cannot have multiple 
+/// descriptors for one task. But we can use several task gates to reference one task.
+/// - Task Gate can reside in GDT/LDT/IDT and it can override the DPL of tss descriptor,
+/// so a task with insufficient privilege to directly access the TSS descriptor can 
+/// access a specific task through a task gate.
+/// - Task can be used for interrupt or exception handling (when residing in IDT). 
+pub const fn pack_task_gate(tss_desc: u16, dpl: Privilege, present: bool) -> Descriptor {
+    pack_desc(tss_desc, 0, SEG_TASK_GATE, TYPE_SYS, dpl, present, 0, 0)
 }
 
 /// This function packs a call gate descirptor from given attributes.
