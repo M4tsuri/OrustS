@@ -5,7 +5,6 @@
 /// which will be dropped during linking.
 
 /// Assign src[src_start:src_start + len] bit to dest[dest_start:dest_start + len]
-#[link_section = ".discard"]
 pub const fn mask_assign(mut dest: u64, src: u64, dest_start: u8, src_start: u8, len: u8) -> u64 {
     let dest_mask = gen_mask(dest_start, len);
     let src_mask = gen_mask(src_start, len);
@@ -22,7 +21,6 @@ pub const fn mask_assign(mut dest: u64, src: u64, dest_start: u8, src_start: u8,
     }
 }
 
-#[link_section = ".discard"]
 pub const fn gen_mask(start: u8, len: u8) -> u64 {
     if start + len >= 64 {
         !0 ^ ((1 << start) - 1)

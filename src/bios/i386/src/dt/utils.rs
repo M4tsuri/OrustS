@@ -4,7 +4,6 @@ use crate::ring::Privilege;
 pub type Selector = u16;
 pub type Descriptor = u64;
 
-#[repr()]
 pub struct DescriptorTable<const LEN: usize> {
     pub table: &'static mut [u64; LEN],
     pub cur: usize
