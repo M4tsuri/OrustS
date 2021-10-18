@@ -171,7 +171,7 @@ pub const fn pack_tss_desc(base: usize, limit: usize, dpl: Privilege, present: b
 /// access a specific task through a task gate.
 /// - Task can be used for interrupt or exception handling (when residing in IDT). 
 pub const fn pack_task_gate(tss_desc: u16, dpl: Privilege, present: bool) -> Descriptor {
-    pack_desc(tss_desc, 0, SEG_TASK_GATE, TYPE_SYS, dpl, present, 0, 0)
+    pack_desc(tss_desc as usize, 0, SEG_TASK_GATE, TYPE_SYS, dpl, present, 0, 0)
 }
 
 /// This function packs a call gate descirptor from given attributes.
