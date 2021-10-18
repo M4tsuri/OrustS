@@ -10,14 +10,14 @@ SECTIONS {
         *(.text*)
     }
 
-    .ldt 491520 : {
+    .ldt 131072 : {
         KEEP(*(.ldt))
     }
-    .tss 495616 : {
+    .tss 135168 : {
         KEEP(*(.tss))
     }
 
-    .data 499712 : {
+    .data 139264 : {
         *(.rodata*)
         *(.data*)
         *(.bss*)
