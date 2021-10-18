@@ -5,6 +5,7 @@
 /// the TSS descriptor of its caller.
 #[repr(packed)]
 pub struct TSS {
+    /// shadow stack pointer
     ssp: u32,
     io_base: u16,
     _pad1: u16,
@@ -42,6 +43,7 @@ pub struct TSS {
     ss0: u16,
     esp0: u32,
     _pad11: u16,
+    /// the tss segment selector of the caller task
     prev_task: u16
 }
 
