@@ -1,0 +1,35 @@
+start: 0
+end: 0x100000
+stages:
+  - name: "stage1"
+    meta:
+      start: 0x7c00
+    sections:
+      body: 0x7c00 # BIOS 1st sector load address
+      magic: 0x7dfe # bootsector magic number
+  - name: "stage2"
+    meta:
+      start: 0x7e00
+      entry: 0x7e00
+    sections:
+      body: 0x7e00 # stage 2 load address
+      gdt: 0xe000
+      gdt_desc: 0xef00
+  - name: "stage3"
+    meta:
+      start: 0xf000
+      entry: 0x10000
+    sections:
+      real: 0xf000
+      body: 0x10000
+      ldt: 0x20000
+      tss: 0x21000
+      data: 0x22000
+  - name: "global"
+    meta: 
+      start: 0x30000
+    sections:
+      heap: 0x40000 # a global heap
+      stack_top: 0x50000
+      stack_but: 0x60000
+      video: 0xb8000

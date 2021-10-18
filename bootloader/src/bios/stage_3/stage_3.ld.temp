@@ -1,0 +1,29 @@
+ENTRY(_start);
+
+SECTIONS {
+    {{#with stage3}}
+    .real {{real}} : {
+        KEEP(*(.real))
+    }
+
+    .body {{body}} : {  
+        KEEP(*(.startup))
+        *(.text*)
+    }
+
+    .ldt {{ldt}} : {
+        KEEP(*(.ldt))
+    }
+    .tss {{tss}} : {
+        KEEP(*(.tss))
+    }
+
+    .data {{data}} : {
+        *(.rodata*)
+        *(.data*)
+        *(.bss*)
+    }
+    {{/with}}
+
+    /DISCARD/ : { *(.eh_frame*) *(.discard)}
+}

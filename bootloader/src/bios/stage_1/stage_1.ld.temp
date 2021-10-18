@@ -1,0 +1,25 @@
+ENTRY(_start);
+
+SECTIONS {
+    {{#with stage1}}
+    .body {{body}} : { 
+        *(.startup) 
+        *(.stage_1) 
+        *(.text*)
+        *(.rodata*)
+        *(.data*)
+        *(.bss*)
+    }   /* Excutable code */
+    /* keep the order of GDT and the GDT Descriptor to make sure that base address of GDT meets the alignment requirement (see https://users.informatik.haw-hamburg.de/~krabat/FH-Labor/gnupro/5_GNUPro_Utilities/c_Using_LD/ldLinker_scripts.html#Input_section_basics) */
+    .magic {{magic}} : { 
+        KEEP(*(.magic)) 
+    }
+    {{/with}}
+
+    {{#with stage2}}
+    .stage2 {{entry}} (NOLOAD) : { 
+        *(.stage_2) 
+    }
+    {{/with}}
+    /DISCARD/ : { *(.eh_frame*) *(.discard)}
+}
