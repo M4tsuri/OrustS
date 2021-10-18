@@ -1,7 +1,7 @@
 use std::{fs::File, io::{Read, Write}, path::Path};
 use layout::*;
 
-static MINEFEST_PATH: &str = "/Users/ctsinon/Projects/Orangs/bootloader";
+static MINEFEST_PATH: &str = "/Users/ctsinon/Projects/Orangs/OrustS/bootloader";
 
 static STAGES: [(&str, usize); 3] = [
     (&"target/stage_1/target/release/stage_1.bin", STAGE1_SIZE),
