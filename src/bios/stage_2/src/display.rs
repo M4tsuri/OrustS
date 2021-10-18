@@ -1,4 +1,4 @@
-#[link_section = ".stage_2"]
+#[inline(always)]
 /// Display a string on screen, see <https://stanislavs.org/helppc/int_10-13.html>.
 /// You should only use this function in real mode.
 pub fn display_real(src: &str) {

@@ -21,7 +21,7 @@ pub struct DAP {
     disk_id: u8
 }
 
-#[inline]
+#[inline(always)]
 fn extended_read_sectors(disk: u8, dap_ptr: *const DAP) -> Result<(), &'static str> {
     let mut res: u8;
     unsafe {
@@ -56,7 +56,7 @@ impl DAP {
         }
     }
 
-    #[inline]
+    #[inline(always)]
     pub fn reset(&self) -> Result<(), &'static str> {
         unsafe {
             asm! {
@@ -68,6 +68,7 @@ impl DAP {
         Ok(())
     }
 
+    #[inline(always)]
     pub fn read(mut self) -> Result<(), &'static str> {
         if self.sector_num > MAX_READ_SECTORS {
             let remained_sectors = self.sector_num - MAX_READ_SECTORS;
