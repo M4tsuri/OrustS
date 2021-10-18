@@ -5,7 +5,7 @@ pub type Selector = u16;
 pub type Descriptor = u64;
 
 pub struct DescriptorTable<const LEN: usize> {
-    pub table: &'static mut [u64; LEN],
+    pub table: &'static mut [Descriptor; LEN],
     pub cur: usize
 }
 
@@ -17,9 +17,19 @@ impl<const LEN: usize> DescriptorTable<LEN> {
         self.cur = 0
     }
 
-    pub fn add(&mut self, entry: u64) -> Result<u16, &'static str> {
+    /// Replace the original table with a new one
+    pub fn replace(&mut self, src: &[Descriptor]) -> Result<(), &'static str> {
+        self.reset();
+        for entry in src {
+            self.add(*entry)?;
+        }
+        Ok(())
+    }
+
+    /// Add an entry to this descriptor table
+    pub fn add(&mut self, entry: Descriptor) -> Result<u16, &'static str> {
         if self.cur >= LEN - 1 {
-            return Err("LDT overflow.\n");
+            return Err("[add] Descriptor Table Overflow.\n");
         }
         
         self.table[self.cur as usize] = entry;
