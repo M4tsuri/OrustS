@@ -1,4 +1,4 @@
-use i386::dt::gdt::{GDTSelector, GDT_DESCRIPTOR};
+use shared::gdt::{GDTSelector, GDT_DESCRIPTOR};
 
 /// Transfer cpu mode from real mode to protect mode.
 /// Protect mode privides us with segmentation of physical address space (also called linear address space), 
@@ -18,7 +18,7 @@ pub fn to_protect() {
         // 2. Execute `lgdt` instruction to load address of GDT to GDTR register.
         //    Here we directly use a externed symbol in instruction, so linker will help 
         //    us relocate it to its real address at compile time
-        asm!("lgdt {}", sym GDT_DESCRIPTOR);
+        asm!("lgdt [{:e}]", in(reg) &GDT_DESCRIPTOR);
         
         // 3. Set PE flag in control register CR0, which activates segmentation.
         //    If needed, set PG flag for paging.

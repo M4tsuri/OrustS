@@ -3,7 +3,7 @@
 use core::marker::PhantomData;
 
 use i386::disk::{DAP, SECTOR_ALIGN};
-use layout::{STAGE1_SIZE, STAGE2_SIZE, STAGE3_SIZE, STAGE3_START};
+use shared::layout::{STAGE1_SIZE, STAGE2_SIZE, STAGE3_SIZE, STAGE3_START};
 
 /// The address of the second stage image.
 

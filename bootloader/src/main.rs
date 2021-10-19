@@ -1,5 +1,6 @@
 use std::{fs::File, io::{Read, Write}, path::Path};
-use layout::*;
+
+include!("./bios/shared/src/layout.rs");
 
 static MINEFEST_PATH: &str = "/Users/ctsinon/Projects/Orangs/OrustS/bootloader";
 

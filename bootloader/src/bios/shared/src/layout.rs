@@ -1,5 +1,3 @@
-#![no_std]
-
 /// This segment is overlapped with the code segment.
 /// It should only be used for protect-real mode switching.
 /// The base address and limit of this segment provides us with appreciated values 
@@ -11,48 +9,30 @@ pub const NORMAL_END: usize = NORMAL_START + NORMAL_SIZE;
 
 
 pub const CODE_START: usize = 0;
-{{#with stage3}}
-pub const CODE_END: usize = {{ldt}};
+pub const CODE_END: usize = 131072;
 
-pub const LDT_START: usize = {{ldt}};
-pub const LDT_END: usize = {{tss}};
+pub const LDT_START: usize = 131072;
+pub const LDT_END: usize = 135168;
 
-pub const DATA_START: usize = {{data}};
-{{/with}}
-
-{{#with global}}
+pub const DATA_START: usize = 139264;
 /// STAGE 3 ends here
-pub const DATA_END: usize = {{stack_top}};
+pub const DATA_END: usize = 327680;
 
-pub const STACK_START: usize = {{stack_top}};
-pub const STACK_END: usize = {{stack_but}};
+pub const STACK_START: usize = 327680;
+pub const STACK_END: usize = 393216;
 
-pub const VIDEO_START: usize = {{video}};
+pub const VIDEO_START: usize = 753664;
 /// 80x25 16 bit text mode 
 pub const VIDEO_SIZE: usize = 80 * 25 * 2;
 pub const VIDEO_END: usize = VIDEO_START + VIDEO_SIZE;
-{{/with}}
-
-{{#with stage1}}
-pub const STAGE1_START: usize = {{start}};
-{{/with}}
-
-{{#with stage2}}
-pub const STAGE1_END: usize = {{start}};
-pub const STAGE2_START: usize = {{start}};
-pub const GDT_START: usize = {{gdt}};
-pub const GDT_END: usize = {{gdt_desc}};
-{{/with}}
-
-{{#with stage3}}
-pub const STAGE2_END: usize = {{start}};
-pub const STAGE3_START: usize = {{start}};
-{{/with}}
-
-{{#with global}}
-pub const STAGE3_END: usize = {{start}};
-{{/with}}
-
+pub const STAGE1_START: usize = 31744;
+pub const STAGE1_END: usize = 32256;
+pub const STAGE2_START: usize = 32256;
+pub const GDT_START: usize = 57344;
+pub const GDT_END: usize = 61184;
+pub const STAGE2_END: usize = 61440;
+pub const STAGE3_START: usize = 61440;
+pub const STAGE3_END: usize = 196608;
 pub const REAL_MODE_MAX_ADDRESS: usize = 0x100000;
 
 pub const CODE_SIZE: usize = CODE_END - CODE_START;

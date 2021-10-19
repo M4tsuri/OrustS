@@ -7,4 +7,4 @@ edition = "2018"
 
 [dependencies]
 i386 = { path = "../../../../i386" }
-layout = { path = "../layout" }
+shared = { path = "../shared" }

@@ -9,7 +9,7 @@ use handlebars::Handlebars;
 
 fn main() {
     let templates = [
-        "./src/bios/layout/src/lib.rs.temp",
+        "./src/bios/shared/src/layout.rs.temp",
         "./src/bios/stage_1/stage_1.ld.temp",
         "./src/bios/stage_2/stage_2.ld.temp",
         "./src/bios/stage_3/stage_3.ld.temp",

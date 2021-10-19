@@ -34,7 +34,6 @@ name = "bootloader"
 version = "0.1.0"
 dependencies = [
  "handlebars",
- "layout",
  "llvm-tools",
  "serde",
  "serde_yaml",
@@ -123,10 +122,6 @@ name = "itoa"
 version = "0.4.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b71991ff56294aa922b450139ee08b3bfc70982c6b2c7562771375cf73542dd4"
-
-[[package]]
-name = "layout"
-version = "0.1.0"
 
 [[package]]
 name = "linked-hash-map"

@@ -3,5 +3,12 @@
 version = 3
 
 [[package]]
-name = "layout"
+name = "i386"
 version = "0.1.0"
+
+[[package]]
+name = "shared"
+version = "0.1.0"
+dependencies = [
+ "i386",
+]

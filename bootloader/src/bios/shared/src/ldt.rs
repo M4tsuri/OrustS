@@ -1,6 +1,9 @@
-use layout::LDT_SIZE;
-use super::utils::{Descriptor, DescriptorTable};
+use crate::layout::LDT_SIZE;
+use i386::dt::{Descriptor, DescriptorTable};
 
+/// This module is only intended to be used by bootloader. 
+/// (For testing and education only, LDT should be set in kernel)
+/// 
 /// LDT is a method of isolating memoyr of tasks from each other.
 /// In protect mode, we need at least one GDT, which can be used by all tasks.
 /// However, if we want to add more restrictions for a specific task.

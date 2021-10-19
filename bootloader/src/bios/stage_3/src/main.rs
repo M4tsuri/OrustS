@@ -8,8 +8,8 @@ mod task;
 
 use core::panic::PanicInfo;
 use display::display_at;
-use i386::{dt::gdt::GDTSelector, ring::Privilege};
-use layout::STACK_END;
+use i386::ring::Privilege;
+use shared::{layout::STACK_END, gdt::GDTSelector};
 use task::Task;
 
 #[panic_handler]

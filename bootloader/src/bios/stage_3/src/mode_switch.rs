@@ -1,4 +1,4 @@
-use i386::dt::gdt::GDTSelector;
+use shared::gdt::GDTSelector;
 
 /// This module defined functons and data structure for returning to real mode.
 /// For details of the switching, see 

@@ -4,6 +4,7 @@
 /// from EIP specified in the TSS. The TSS of callee will also save 
 /// the TSS descriptor of its caller.
 #[repr(packed)]
+#[allow(unused)]
 pub struct TSS {
     /// shadow stack pointer
     ssp: u32,

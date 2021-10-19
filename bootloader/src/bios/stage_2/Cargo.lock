@@ -5,18 +5,18 @@ version = 3
 [[package]]
 name = "i386"
 version = "0.1.0"
-dependencies = [
- "layout",
-]
 
 [[package]]
-name = "layout"
+name = "shared"
 version = "0.1.0"
+dependencies = [
+ "i386",
+]
 
 [[package]]
 name = "stage_2"
 version = "0.1.0"
 dependencies = [
  "i386",
- "layout",
+ "shared",
 ]
