@@ -17,12 +17,24 @@ unsafe impl<const LEN: usize> Sync for GDTDescriptor<LEN> {}
 impl<const LEN: usize> GDTDescriptor<LEN> {
     /// Update the gdt descriptor and then update gdtr.
     /// This function should be called in a task with CPL of ring 0.
-    pub fn update(&mut self, src: &'static DescriptorTable<LEN>) {
-        self.limit = src.cur as u16 * 8 - 1;
-        self.base_address = src.table;
-        unsafe {
-            asm!("lgdt [{:e}]", in(reg) self)
+    pub fn update(src: &'static DescriptorTable<LEN>) -> Result<(), &'static str> {
+        if src.cur == 0 {
+           return Err("Empty GDT.\n")
         }
+        // this is enforced by intel
+        if src.table[0] != 0 {
+            return Err("GDT[0] not empty.\n")
+        }
+
+        let desc = Self {
+            limit: src.cur as u16 * 8 - 1,
+            base_address: src.table
+        };
+        
+        unsafe {
+            asm!("lgdt [{:e}]", in(reg) &desc)
+        }
+        Ok(())
     }
 }
 

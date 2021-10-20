@@ -1,5 +1,5 @@
 /// This module is only intended to be used by bootloader to setup a initial GDT
-use i386::dt::{packers::*, gdt::GDTDescriptor, consts::*};
+use i386::dt::{packers::*, consts::*};
 use i386::dt::{DescriptorTable, Descriptor, DTType};
 use crate::layout::*;
 use i386::ring::Privilege;
@@ -92,18 +92,6 @@ const fn init_gdt() -> [u64; GDT_MAX_LEN] {
 #[used]
 #[link_section = ".gdt"]
 static mut _GDT_TABLE: [Descriptor; GDT_MAX_LEN] = init_gdt();
-
-/// An instance of GDT descriptor, occupying 6 bytes in memory.
-/// The `limit` field is the length of GDT **in bytes** - 1, which is used by processor 
-/// to find the last valid byte in GDT (see *Intel Developer Manual Vol. 3A 3-15*).
-#[used]
-#[no_mangle]
-#[allow(improper_ctypes)]
-#[link_section = ".gdt_desc"]
-pub static mut GDT_DESCRIPTOR: GDTDescriptor<GDT_MAX_LEN> = GDTDescriptor {
-    limit: GDT_RESERVED_LEN as u16 * 8 - 1,
-    base_address: unsafe { &_GDT_TABLE }
-};
 
 /// A wrapper for GDT, we use this wrapper to dynamically change the content of
 /// GDT, thus gives us more extensibility.
