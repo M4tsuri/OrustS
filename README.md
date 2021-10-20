@@ -8,6 +8,7 @@ This operation system is under active developing.
 
 - [ ] implement a bootloader
   - [x] build a staged bootloader demo
+  - [ ] enable the A20 line
   - [x] setup GDT
   - [ ] load kernel image into ram
   - [x] transfer into protect mode
