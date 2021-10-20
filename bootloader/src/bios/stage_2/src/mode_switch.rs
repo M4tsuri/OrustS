@@ -1,4 +1,5 @@
-use shared::gdt::{GDTSelector, GDT_DESCRIPTOR};
+use shared::gdt::{GDTSelector, GDT_TABLE};
+use i386::{dt::gdt::GDTDescriptor, instrs::*};
 
 /// Transfer cpu mode from real mode to protect mode.
 /// Protect mode privides us with segmentation of physical address space (also called linear address space), 
@@ -9,16 +10,15 @@ use shared::gdt::{GDTSelector, GDT_DESCRIPTOR};
 ///
 /// The detailed steps are descripted in
 /// *Intel Developer Manual Volume Section 9.9.1 Switching to Protect Mode*.
-#[link_section = ".stage_2"]
-pub fn to_protect() {
+pub fn to_protect() -> Result<(), &'static str> {
+     // 1. Disable maskable hardware interrupts
+    cli();
+
     unsafe {
-        // 1. Disable maskable hardware interrupts
-        asm!("cli");
-        
         // 2. Execute `lgdt` instruction to load address of GDT to GDTR register.
         //    Here we directly use a externed symbol in instruction, so linker will help 
         //    us relocate it to its real address at compile time
-        asm!("lgdt [{:e}]", in(reg) &GDT_DESCRIPTOR);
+        GDTDescriptor::update(&GDT_TABLE)?;
         
         // 3. Set PE flag in control register CR0, which activates segmentation.
         //    If needed, set PG flag for paging.
@@ -27,7 +27,8 @@ pub fn to_protect() {
         asm! {
             "mov eax, cr0",
             "or eax, 1",
-            "mov cr0, eax"
+            "mov cr0, eax",
+            out("eax") _
         }
     
         // 4. Do a far jump to the next instruction to serialize the processer 
@@ -39,5 +40,5 @@ pub fn to_protect() {
             CS = const GDTSelector::CODE as u16
         }
     }
-    
+    Ok(())
 }

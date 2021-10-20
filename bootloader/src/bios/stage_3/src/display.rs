@@ -6,10 +6,9 @@ pub fn display_at(row: u8, col: u8, content: &str) {
     for i in 0..content.len() {
         unsafe {
             asm! {
-                "mov ah, 0x0c",
                 "mov gs:[edi], ax",
                 in("edi") idx + (i * 2) as u32,
-                in("al") content.as_bytes()[i]
+                in("ax") (0x0c << 8) | (content.as_bytes()[i] as u16)
             }
         }
     }

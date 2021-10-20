@@ -59,7 +59,9 @@ unsafe fn _to_real() {
         "push edx",
         "retf",
         ".code32",
-        normal = const GDTSelector::NORMAL as u8
+        normal = const GDTSelector::NORMAL as u8,
+        out("edx") _,
+        out("eax") _
     }
 }
 
@@ -67,10 +69,10 @@ unsafe fn _to_real() {
 pub unsafe fn poweroff() {
     asm! {
         ".code16",
-        "mov ax, 0x5307",
-        "mov bx, 0x0001",
-        "mov cx, 0x0003",
         "int 15h",
-        ".code32"
+        ".code32",
+        in("ax") 0x5307,
+        in("bx") 0x0001,
+        in("cx") 0x0003
     }
 }

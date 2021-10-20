@@ -37,7 +37,8 @@ fn init_protect() {
             stack = const GDTSelector::STACK as u16,
             null = const GDTSelector::NULL as u16,
             video = const GDTSelector::VIDEO as u16,
-            stack_but = const STACK_END - 0x10
+            stack_but = const STACK_END - 0x10,
+            out("ax") _
         }
 
         // 6. re-enable hardware interrupts

@@ -6,6 +6,7 @@ mod img_load;
 
 use core::{intrinsics::transmute, marker::PhantomData, panic::PanicInfo};
 use img_load::{STAGE2_PTR, load_stage2};
+use i386::video::BIOS_80X25_16_COLOR;
 
 #[link_section = ".stage_1"]
 #[panic_handler]
@@ -35,10 +36,15 @@ fn _start() -> ! {
             "mov es, ax",
             "mov ss, ax",
             "mov sp, {stack}",
-            "mov ax, 0x0003",
-            "int 10h",
-            stack = const TMP_STACK
+            stack = const TMP_STACK,
+            out("ax") _,
         );
+
+        asm! {
+            "int 10h",
+            in("ax") (0 << 8) | (BIOS_80X25_16_COLOR as u16)
+            
+        }
     }
     
     if let Err(_) = load_stage2() { 
