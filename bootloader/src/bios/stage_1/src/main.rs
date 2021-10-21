@@ -8,7 +8,6 @@ use core::{intrinsics::transmute, marker::PhantomData, panic::PanicInfo};
 use img_load::{STAGE2_PTR, load_stage2};
 use i386::video::BIOS_80X25_16_COLOR;
 
-#[link_section = ".stage_1"]
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
     loop {}

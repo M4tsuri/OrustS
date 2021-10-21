@@ -2,8 +2,7 @@ ENTRY(_start);
 
 SECTIONS {
     .body 31744 : { 
-        *(.startup) 
-        *(.stage_1) 
+        *(.startup)
         *(.text*)
         *(.rodata*)
         *(.data*)

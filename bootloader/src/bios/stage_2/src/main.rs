@@ -11,8 +11,6 @@ use display::display_real;
 use img_load::{STAGE3_PTR, load_stage3};
 use mode_switch::to_protect;
 
-
-#[link_section = ".stage_2"]
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
     loop {}
