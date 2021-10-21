@@ -43,47 +43,22 @@ const fn init_gdt() -> [u64; GDT_MAX_LEN] {
     gdt[0] = pack_desc(0, 0, 
         0, 0, 
         Privilege::Ring0, false, 0, 0);
-    // Code Segment, 512KiB, code execute and read
+    // Code Segment, 4G
     gdt[1] = pack_desc(0, CODE_END - 1, 
         SEG_CODE | SEGC_READ, TYPE_CD, 
         Privilege::Ring0, true, ATTR_SEG32, 0);
-    // Data Segment, 112KiB, data Read/Write,accessed
+    // Data Segment, 4G
     gdt[2] = pack_desc(0, DATA_END - 1, 
         SEGD_WRITE, TYPE_CD, 
         Privilege::Ring0, true, ATTR_SEG32, 0);
-    // Stack Segment, 112KiB, grow down, note for a grow down segment, 
-    // available offset ranges from limit + 1 to 0xffffffff (or 0xffff)
-    // so decrease limit allocates new memory for this segment.
-    gdt[3] = pack_desc(0, STACK_START, 
+    // Stack Segment, unlimited
+    gdt[3] = pack_desc(0, 0, 
         SEGD_DOWN | SEGD_WRITE, TYPE_CD,
         Privilege::Ring0, true, ATTR_SEG32, 0);
     // Video RAM
     gdt[4] = pack_desc(VIDEO_START, VIDEO_SIZE - 1, 
         SEGD_WRITE, TYPE_CD, 
         Privilege::Ring0, true, ATTR_SEG32, 0);
-    // A normal segment for executing code to switch to real mode in protect mode.
-    // We make a far jump to code in this segment in protect mode to load cs register
-    // with a segment descriptor with suitable limit and other attributes.
-    // To prevent errors, this segment should satisfy the following conditions:
-    // 1. A 16-bit code segment to make sure our processor works correctly after entering real mode.
-    // 2. A small segment with limit of 0FFFFh
-    //    i.e. max limit is 0FFFFh to meet real mode addressing limitations
-    // 3. Start at 0 to make logical address and linear address consistent.
-    gdt[5] = pack_desc(0, NORMAL_END - 1, 
-        SEGC_READ | SEG_CODE, TYPE_CD, 
-        Privilege::Ring0, true, ATTR_SEG16, 0);
-    // A normal segment for mode switching, this is a 16 bit writable data segment.
-    // This segment overlaps with the previous one to meet the real mode unsegmented model.
-    // The descriptor of this segment will be loaded to ss, es, fs, gs, ds after entering real mode.
-    gdt[6] = pack_desc(0, NORMAL_END - 1, 
-        SEGD_WRITE, TYPE_CD, 
-        Privilege::Ring0, true, ATTR_SEG16, 0);
-    // Segment for LDT, note this descriptor is system management descriptor,
-    // so s_type bit is clear.
-    // See *Intel Developer Manual 3-14 Vol. 3A* for perm field definitions.
-    gdt[7] = pack_desc(LDT_START, LDT_SIZE - 1, 
-        SEG_LDT, TYPE_SYS, 
-        Privilege::Ring0, true, 0b000, 0);
     gdt
 }
 

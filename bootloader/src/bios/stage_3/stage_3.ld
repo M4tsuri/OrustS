@@ -1,7 +1,7 @@
 ENTRY(_start);
 
 SECTIONS {
-    .real 61440 : {
+    .real  : {
         KEEP(*(.real))
     }
 
@@ -10,10 +10,10 @@ SECTIONS {
         *(.text*)
     }
 
-    .ldt 131072 : {
+    .ldt  : {
         KEEP(*(.ldt))
     }
-    .tss 135168 : {
+    .tss  : {
         KEEP(*(.tss))
     }
 

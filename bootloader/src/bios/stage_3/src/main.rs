@@ -3,14 +3,11 @@
 #![feature(asm)]
 
 mod display;
-mod mode_switch;
-mod task;
 
 use core::panic::PanicInfo;
 use display::display_at;
 use i386::ring::Privilege;
 use shared::{layout::STACK_END, gdt::GDTSelector};
-use task::Task;
 
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
@@ -55,11 +52,6 @@ fn init_protect() {
 fn main() -> Result<(), &'static str> {
     // switch to real mode and poweroff, just for illustrating our mode switching works.
     // crate::mode_switch::to_real(crate::mode_switch::poweroff as u16);
-
-    // just a test here
-    let mut task = Task::new(Privilege::Ring0, tmp as usize, 0x1000);
-    task.init_ldt()?;
-    task.transfer();
     Ok(())
 }
 
@@ -75,11 +67,5 @@ fn _start() -> ! {
         display_at(0, 0, msg);
         unsafe { asm!("hlt"); }
     }
-    loop {}
-}
-
-/// A function for testing task switching, just print a "L" at row 10, col 0.
-fn tmp() -> ! {
-    display_at(10, 0, "L");
     loop {}
 }
