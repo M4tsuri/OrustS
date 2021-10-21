@@ -6,7 +6,6 @@ stages:
       start: 0x7c00
     sections:
       body: 0x7c00 # BIOS 1st sector load address
-      magic: 0x7dfe # bootsector magic number
   - name: "stage2"
     meta:
       start: 0x7e00

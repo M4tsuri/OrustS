@@ -14,10 +14,6 @@ fn panic(_info: &PanicInfo) -> ! {
     loop {}
 }
 
-#[used]
-#[link_section = ".magic"]
-static BIOS_MAGIC: u16 = 0xaa55;
-
 pub const TMP_STACK: u16 = 0x7b00;
 
 /// Our entrypoiny of bootloader.
