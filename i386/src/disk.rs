@@ -27,12 +27,12 @@ fn extended_read_sectors(disk: u8, dap_ptr: *const DAP) -> Result<(), &'static s
     unsafe {
         asm! {
             "push si",
-            "mov si, bx",
+            "mov si, {si:x}",
             "int 0x13",
             "pop si",
+            si = in(reg) dap_ptr,
             inout("ah") 0x42_i8 => res,
             in("dl") disk,
-            in("bx") dap_ptr,
         }
     }
     if res == 0 {
