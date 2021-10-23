@@ -31,3 +31,14 @@ pub fn check_a20() -> bool {
     return !(magic == 0xbabecafe)
 }
 
+pub fn enable_a20() {
+    unsafe {
+        asm! {
+            "in al, 0x92",
+            "or al, 2",
+            "out 0x92, al",
+            out("al") _
+        }
+    }
+}
+

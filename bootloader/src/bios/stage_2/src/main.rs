@@ -7,10 +7,10 @@ mod display;
 mod img_load;
 mod a20;
 
-use core::{marker::PhantomData, panic::PanicInfo, mem::transmute};
-use a20::check_a20;
+use core::panic::PanicInfo;
+use a20::{check_a20, enable_a20};
 use display::display_real;
-use img_load::{STAGE3_PTR, load_stage3};
+use img_load::load_stage3;
 use mode_switch::to_protect;
 
 #[panic_handler]
@@ -23,11 +23,18 @@ fn main() -> Result<(), &'static str> {
     load_stage3()?;
     display_real("Stage 3 loaded.");
 
-    if check_a20() {
-        display_real("A20 enabled")
+    for _ in [0..255] {
+        if check_a20() {
+            break;
+        }
+        enable_a20();
     }
 
-    to_protect()?;
+    if !check_a20() {
+        display_real("A20 not enabled.");
+        unsafe { asm!("hlt") }
+    }
+
     Ok(())
 }
 
@@ -41,6 +48,5 @@ fn _start() -> ! {
         unsafe { asm!("hlt;") };
     }
     
-    let stage_3: fn() -> ! = unsafe { transmute(&STAGE3_PTR as *const PhantomData<()>) };
-    stage_3()
+    to_protect()
 }
