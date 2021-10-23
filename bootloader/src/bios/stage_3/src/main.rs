@@ -6,7 +6,6 @@ mod display;
 
 use core::panic::PanicInfo;
 use display::display_at;
-use i386::ring::Privilege;
 use shared::{layout::STACK_END, gdt::GDTSelector};
 
 #[panic_handler]
@@ -19,7 +18,6 @@ fn init_protect() {
     unsafe {
         // 5. Load DS, SS, ES, FS and GS with corresponding GDT selectors
         asm! {
-            "next:",
             "mov ax, {data}",
             "mov ds, ax",
             "mov ax, {stack}",
