@@ -42,6 +42,29 @@ fn extended_read_sectors(disk: u8, dap_ptr: *const DAP) -> Result<(), &'static s
     }
 }
 
+pub fn read_disk(addr: (u8, u64), buffer: &mut [u8]) -> Result<(), &'static str> {
+    let dest = buffer.as_ptr() as usize;
+    let dap = DAP::new(addr, (dest as u16, ((dest >> 16) as u16) << 12), buffer.len());
+    dap.read()?;
+    Ok(())
+}
+
+pub fn reset_disk(disk_id: u8) -> Result<(), &'static str> {
+    let mut res: u8;
+    unsafe {
+        asm! {
+            "int 13h",
+            in("dl") disk_id,
+            inout("ah") 0_u8 => res
+        }
+    }
+    if res == 0 {
+        Ok(())
+    } else {
+        Err("Disk Error.\n")
+    }
+}
+
 impl DAP {
     /// - disk: (disk_id, start_lba)
     /// - buffer: (segment, offset)
@@ -54,23 +77,6 @@ impl DAP {
             buffer_ptr: buffer,
             start_lba: disk.1,
             disk_id: disk.0
-        }
-    }
-
-    #[inline(always)]
-    pub fn reset(&self) -> Result<(), &'static str> {
-        let mut res: u8;
-        unsafe {
-            asm! {
-                "int 13h",
-                in("dl") self.disk_id,
-                inout("ah") 0_u8 => res
-            }
-        }
-        if res == 0 {
-            Ok(())
-        } else {
-            Err("Disk Error.\n")
         }
     }
 

@@ -1,8 +1,8 @@
 /// This module loads the second stage image into memory.
 
-use core::marker::PhantomData;
+use core::{intrinsics::transmute, marker::PhantomData};
 
-use i386::disk::{DAP, SECTOR_ALIGN};
+use i386::disk::{SECTOR_ALIGN, read_disk, reset_disk};
 use shared::layout::{STAGE1_SIZE, STAGE2_SIZE, STAGE3_SIZE, STAGE3_START};
 
 /// The address of the second stage image.
@@ -16,11 +16,9 @@ pub const STAGE_DISK: u8 = 0x80;
 
 #[inline]
 pub fn load_stage3() -> Result<(), &'static str> {
-    let dap = DAP::new(
-        (STAGE_DISK, ((STAGE1_SIZE + STAGE2_SIZE) >> SECTOR_ALIGN) as u64), 
-        (STAGE3_START as u16, ((STAGE3_START >> 16) as u16) << 12),
-        STAGE3_SIZE);
-    dap.reset()?;
-    dap.read()?;
+    reset_disk(STAGE_DISK)?;
+    let stage_3 = unsafe { transmute::<usize, &mut [u8; STAGE3_SIZE]>(STAGE3_START) };
+    let start_lba = ((STAGE1_SIZE + STAGE2_SIZE) >> SECTOR_ALIGN) as u64;
+    read_disk((STAGE_DISK, start_lba), stage_3)?;
     Ok(())
 }
