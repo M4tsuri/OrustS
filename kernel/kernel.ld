@@ -1,10 +1,11 @@
 ENTRY(main);
 
 SECTIONS {
-    .text 0x100000 : { 
+    . = 0x100000;
+    .text ALIGN(4K) : { 
         *(.text*)
     }   /* Excutable code */
-    .data : {
+    .data ALIGN(4K) : {
         *(.rodata*)
         *(.data*)
         *(.bss*)
