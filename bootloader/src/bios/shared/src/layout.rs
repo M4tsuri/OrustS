@@ -32,6 +32,8 @@ pub const GDT_SIZE: usize = GDT_END - GDT_START;
 pub const STAGE2_END: usize = 65536;
 pub const STAGE3_START: usize = 65536;
 pub const STAGE3_END: usize = 196608;
+pub const KERNEL_START: usize = 1048576;
+pub const KERNEL_END: usize = 2097152;
 pub const REAL_MODE_MAX_ADDRESS: usize = 0x100000;
 
 pub const CODE_SIZE: usize = CODE_END - CODE_START;
@@ -41,3 +43,5 @@ pub const STACK_SIZE: usize = STACK_END - STACK_START;
 pub const STAGE1_SIZE: usize = STAGE1_END - STAGE1_START;
 pub const STAGE2_SIZE: usize = STAGE2_END - STAGE2_START;
 pub const STAGE3_SIZE: usize = STAGE3_END - STAGE3_START;
+
+pub const KERNEL_SIZE: usize = KERNEL_END - KERNEL_START;

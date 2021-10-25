@@ -1,7 +1,7 @@
 /// This module loads the second stage image into memory.
 
 use core::{intrinsics::transmute, marker::PhantomData};
-use i386::disk::{DAP, SECTOR_ALIGN, read_disk, reset_disk};
+use i386::disk::{SECTOR_ALIGN, read_disk, reset_disk};
 use shared::layout::{STAGE1_SIZE, STAGE2_SIZE, STAGE2_START};
 
 /// The address of the second stage image.

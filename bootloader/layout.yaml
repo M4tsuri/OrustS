@@ -28,3 +28,9 @@ stages:
       stack_top: 0x50000
       stack_but: 0x60000
       video: 0xb8000
+  - name: "kernel"
+    meta:
+      start: 0x100000
+      end: 0x200000
+    sections:
+      body: 0x100000
