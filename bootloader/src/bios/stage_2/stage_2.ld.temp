@@ -1,3 +1,8 @@
+MEMORY {
+    rom (rwx) : ORIGIN = {{#with stage2}}{{start}}{{/with}}, LENGTH = {{#with stage3}}{{start}}{{/with}} - {{#with stage2}}{{start}}{{/with}}
+    stage3_ptr (!r!w!x) : ORIGIN = {{#with stage3}}{{entry}}{{/with}}, LENGTH = 0
+}
+
 ENTRY(_start);
 
 SECTIONS {
@@ -8,17 +13,19 @@ SECTIONS {
         *(.rodata*)
         *(.data*)
         *(.bss*)
-    }      /* Excutable code */
+    }      /* Excutable code */ > rom
     .gdt {{gdt}} : {
         KEEP(*(.gdt)) 
-    }
+        FILL(0)
+        . = ORIGIN(rom) + LENGTH(rom);
+    } > rom
     {{/with}}
 
     /* keep the order of GDT and the GDT Descriptor to make sure that base address of GDT meets the alignment requirement (see https://users.informatik.haw-hamburg.de/~krabat/FH-Labor/gnupro/5_GNUPro_Utilities/c_Using_LD/ldLinker_scripts.html#Input_section_basics) */
     {{#with stage3}}
     .stage3 {{entry}} (NOLOAD) : { 
         KEEP(*(.stage_3)) 
-    }
+    } > stage3_ptr
     {{/with}}
     /DISCARD/ : { *(.eh_frame*) *(.discard)}
 }

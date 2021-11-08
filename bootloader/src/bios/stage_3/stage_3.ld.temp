@@ -1,29 +1,31 @@
+MEMORY {
+    code (rx) : ORIGIN = {{#with stage3}}{{body}}{{/with}}, LENGTH = {{#with stage3}}{{data}}{{/with}} - {{#with stage3}}{{body}}{{/with}}
+    data (rw) : ORIGIN = {{#with stage3}}{{data}}{{/with}}, LENGTH = {{#with global}}{{start}}{{/with}} - {{#with stage3}}{{data}}{{/with}}
+}
+
 ENTRY(_start);
 
 SECTIONS {
     {{#with stage3}}
-    .real {{real}} : {
-        KEEP(*(.real))
-    }
-
-    .body {{body}} : {  
+    .body : {  
         KEEP(*(.startup))
         *(.text*)
-    }
+        FILL(0)
+        . = ORIGIN(code) + LENGTH(code);
+    } > code
 
-    .ldt {{ldt}} : {
-        KEEP(*(.ldt))
-    }
-    .tss {{tss}} : {
-        KEEP(*(.tss))
-    }
-
-    .data {{data}} : {
+    .data : {
         *(.rodata*)
         *(.data*)
         *(.bss*)
-    }
+    } > data
     {{/with}}
+
+    .fill : {
+        FILL(0)
+        . = ORIGIN(data) + LENGTH(data) - 1;
+        BYTE(0)
+    }
 
     /DISCARD/ : { *(.eh_frame*) *(.discard)}
 }
