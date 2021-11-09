@@ -18,6 +18,7 @@ SECTIONS {
         *(.data*)
         *(.bss*)
     } > data
+
     .fill : {
         FILL(0)
         . = ORIGIN(data) + LENGTH(data) - 1;

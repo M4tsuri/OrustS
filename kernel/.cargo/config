@@ -1,0 +1,2 @@
+[alias]
+kbuild = "run --manifest-path ./kbuild/Cargo.toml --"

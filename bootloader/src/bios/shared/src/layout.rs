@@ -23,17 +23,23 @@ pub const VIDEO_START: usize = 753664;
 /// 80x25 16 bit text mode 
 pub const VIDEO_SIZE: usize = 80 * 25 * 2;
 pub const VIDEO_END: usize = VIDEO_START + VIDEO_SIZE;
+
 pub const STAGE1_START: usize = 31744;
+
 pub const STAGE1_END: usize = 32256;
 pub const STAGE2_START: usize = 32256;
 pub const GDT_START: usize = 65280;
+
 pub const GDT_END: usize = 65536;
 pub const GDT_SIZE: usize = GDT_END - GDT_START;
 pub const STAGE2_END: usize = 65536;
 pub const STAGE3_START: usize = 65536;
+
 pub const STAGE3_END: usize = 196608;
+
 pub const KERNEL_START: usize = 1048576;
 pub const KERNEL_END: usize = 2097152;
+
 pub const REAL_MODE_MAX_ADDRESS: usize = 0x100000;
 
 pub const CODE_SIZE: usize = CODE_END - CODE_START;
