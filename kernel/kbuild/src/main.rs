@@ -37,7 +37,6 @@ fn build(target: &Path) {
 }
 
 fn run(target: &Path) {
-    println!("here");
     if !target.is_file() {
         build(target);
     }
