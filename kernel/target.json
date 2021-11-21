@@ -17,7 +17,7 @@
     "features": "-mmx,-sse,+soft-float",
     "pre-link-args": {
         "ld.lld": [
-            "--script=kernel.ld"
+            "--script=kernel/kernel.ld"
         ]
     }
 }

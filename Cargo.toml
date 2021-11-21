@@ -1,0 +1,11 @@
+[workspace]
+
+members = [
+    "bootloader/shared",
+    "bootloader/stage_1",
+    "bootloader/stage_2",
+    "bootloader/stage_3",
+    "kernel",
+    "i386",
+    "kbuild"
+]

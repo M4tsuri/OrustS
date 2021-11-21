@@ -7,6 +7,7 @@ use std::process::Command;
 use std::str::FromStr;
 extern crate clap;
 use clap::{Arg, value_t};
+use config::ROOT_PROJ;
 
 mod bootloader;
 mod kernel;
@@ -78,8 +79,8 @@ fn main() {
         .unwrap_or_else(|e| e.exit());
 
     match ty {
-        Choice::Build => build(&kernel::PREFIX.join("target").join("orusts")),
-        Choice::Run => run(&kernel::PREFIX.join("target").join("orusts"))
+        Choice::Build => build(&ROOT_PROJ.join("target").join("orusts")),
+        Choice::Run => run(&ROOT_PROJ.join("target").join("orusts"))
     }
 
     println!("Build Done.");

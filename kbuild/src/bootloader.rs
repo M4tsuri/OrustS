@@ -24,16 +24,16 @@ lazy_static! {
 
 pub fn build() -> Vec<PathBuf> {
     [
-        "bios/shared/src/layout.rs.temp",
-        "bios/stage_1/stage_1.ld.temp",
-        "bios/stage_2/stage_2.ld.temp",
-        "bios/stage_3/stage_3.ld.temp",
+        "shared/src/layout.rs.temp",
+        "stage_1/stage_1.ld.temp",
+        "stage_2/stage_2.ld.temp",
+        "stage_3/stage_3.ld.temp",
     ].map(|x| PREFIX.join(x))
      .map(|x| apply_template(&LAYOUT_CONF, &x));
     [
-        "bios/stage_1",
-        "bios/stage_2",
-        "bios/stage_3",
+        "stage_1",
+        "stage_2",
+        "stage_3",
     ].map(|x| PREFIX.join(x))
      .map(|x| build_subproject(&x, &x.join("target.json")))
      .to_vec()

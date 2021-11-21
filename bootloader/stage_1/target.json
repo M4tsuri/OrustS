@@ -24,7 +24,7 @@
     "features": "-mmx,-sse,+soft-float",
     "pre-link-args": {
         "ld.lld": [
-            "--script=stage_2.ld"
+            "--script=bootloader/stage_1/stage_1.ld"
         ]
     }
 }

@@ -14,8 +14,5 @@ lazy_static! {
             .tool(&exe("llvm-objcopy"))
             .expect("llvm-objcopy not found")
     };
-    pub static ref TARGET: PathBuf = {
-        let cur = env::current_dir().unwrap();
-        cur.join("target")
-    };
+    pub static ref TARGET: PathBuf = ROOT_PROJ.join("target");
 }
