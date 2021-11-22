@@ -29,6 +29,8 @@ pub const STAGE1_START: usize = 31744;
 pub const STAGE1_END: usize = 32256;
 pub const STAGE2_START: usize = 32256;
 pub const GDT_START: usize = 65280;
+pub const MEMINFO_START: usize = 65024;
+pub const MEMINFO_SIZE: usize = GDT_START - MEMINFO_START;
 
 pub const GDT_END: usize = 65536;
 pub const GDT_SIZE: usize = GDT_END - GDT_START;

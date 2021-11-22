@@ -12,6 +12,7 @@ stages:
       entry: 0x7e00
     sections:
       body: 0x7e00 # stage 2 load address
+      meminfo: 0xfe00
       gdt: 0xff00
   - name: "stage3"
     meta:

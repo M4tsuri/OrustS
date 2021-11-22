@@ -34,7 +34,9 @@ pub const STAGE1_START: usize = {{start}};
 pub const STAGE1_END: usize = {{start}};
 pub const STAGE2_START: usize = {{start}};
 pub const GDT_START: usize = {{gdt}};
+pub const MEMINFO_START: usize = {{meminfo}};
 {{/with}}
+pub const MEMINFO_SIZE: usize = GDT_START - MEMINFO_START;
 
 {{#with stage3}}
 pub const GDT_END: usize = {{start}};

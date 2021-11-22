@@ -13,6 +13,9 @@ SECTIONS {
         *(.data*)
         *(.bss*)
     }      /* Excutable code */ > rom
+    .meminfo 65024 : {
+        KEEP(*(.meminfo))
+    }
     .gdt 65280 : {
         KEEP(*(.gdt)) 
         FILL(0)
