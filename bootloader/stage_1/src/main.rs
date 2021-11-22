@@ -6,7 +6,7 @@ mod img_load;
 
 use core::{intrinsics::transmute, marker::PhantomData, panic::PanicInfo};
 use img_load::{STAGE2_PTR, load_stage2};
-use i386::video::BIOS_80X25_16_COLOR;
+use i386::bios::video::BIOS_80X25_16_COLOR;
 
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {

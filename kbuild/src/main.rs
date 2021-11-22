@@ -51,9 +51,24 @@ fn run(target: &Path) {
         .spawn().unwrap();
 }
 
+fn debug(target: &Path) {
+    if !target.is_file() {
+        build(target);
+    }
+    // qemu-system-i386 -d int -no-reboot -drive format=raw,index=0,media=disk,file=bootloader.bin -vga std
+    Command::new("qemu-system-i386")
+        .args(["-d", "int"])
+        .arg("-no-reboot")
+        .arg("-drive")
+        .arg(&format!("format=raw,index=0,media=disk,file={}", target.to_str().unwrap()))
+        .args(["-vga", "std", "-s", "-S"])
+        .spawn().unwrap();
+}
+
 enum Choice {
     Build,
     Run,
+    Debug
 }
 
 impl FromStr for Choice {
@@ -63,6 +78,7 @@ impl FromStr for Choice {
         match s.to_ascii_lowercase().as_str() {
             "build" => Ok(Self::Build),
             "run" => Ok(Self::Run),
+            "debug" => Ok(Self::Debug),
             _ => Err("no match")
         }
     }
@@ -72,7 +88,7 @@ fn main() {
     let matches = clap::App::new("kbuikd")
         .version("1.0.0")
         .arg(Arg::from_usage("<type> 'The type to use'")
-            .possible_values(&["build", "run"]))
+            .possible_values(&["build", "run", "debug"]))
         .get_matches();
 
     let ty = value_t!(matches, "type", Choice)
@@ -80,7 +96,8 @@ fn main() {
 
     match ty {
         Choice::Build => build(&ROOT_PROJ.join("target").join("orusts")),
-        Choice::Run => run(&ROOT_PROJ.join("target").join("orusts"))
+        Choice::Run => run(&ROOT_PROJ.join("target").join("orusts")),
+        Choice::Debug => debug(&ROOT_PROJ.join("target").join("orusts"))
     }
 
     println!("Build Done.");
