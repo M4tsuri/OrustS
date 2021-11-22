@@ -2,7 +2,7 @@
 
 use core::{intrinsics::transmute, marker::PhantomData};
 
-use i386::disk::{SECTOR_ALIGN, read_disk, reset_disk};
+use i386::bios::disk::{SECTOR_ALIGN, read_disk, reset_disk};
 use shared::layout::{KERNEL_SIZE, KERNEL_START, STAGE1_SIZE, STAGE2_SIZE, STAGE3_SIZE, STAGE3_START};
 
 /// The address of the second stage image.
@@ -14,7 +14,6 @@ use shared::layout::{KERNEL_SIZE, KERNEL_START, STAGE1_SIZE, STAGE2_SIZE, STAGE3
 pub static STAGE3_PTR: PhantomData<()> = PhantomData;
 
 pub const STAGE_DISK: u8 = 0x80;
-pub const KERNEL_DISK: u8 = 0x81;
 
 #[inline]
 pub fn load_stage3() -> Result<(), &'static str> {

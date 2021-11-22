@@ -10,7 +10,7 @@ mod a20;
 use core::panic::PanicInfo;
 use a20::{check_a20, enable_a20};
 use display::display_real;
-use img_load::load_stage3;
+use img_load::{load_kernel, load_stage3};
 use mode_switch::to_protect;
 
 #[panic_handler]
@@ -22,7 +22,10 @@ fn main() -> Result<(), &'static str> {
     display_real("Stage 2 entered.");
     load_stage3()?;
     display_real("Stage 3 loaded.");
+    load_kernel()?;
+    display_real("Kernel loaded.");
 
+    // try to enable A20 line
     for _ in [0..255] {
         if check_a20() {
             break;
