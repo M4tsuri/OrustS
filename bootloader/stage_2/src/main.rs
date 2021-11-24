@@ -10,8 +10,10 @@ mod a20;
 use core::panic::PanicInfo;
 use a20::{check_a20, enable_a20};
 use display::display_real;
-use img_load::{load_kernel, load_stage3};
+use i386::bios::mem::E820MemInfo;
+use img_load::load_stage3;
 use mode_switch::to_protect;
+use shared::mem::{MEMINFO, _MEMINFO};
 
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
@@ -22,8 +24,6 @@ fn main() -> Result<(), &'static str> {
     display_real("Stage 2 entered.");
     load_stage3()?;
     display_real("Stage 3 loaded.");
-    load_kernel()?;
-    display_real("Kernel loaded.");
 
     // try to enable A20 line
     for _ in [0..255] {
@@ -36,6 +36,10 @@ fn main() -> Result<(), &'static str> {
     if !check_a20() {
         display_real("A20 not enabled.");
         unsafe { asm!("hlt") }
+    }
+
+    unsafe {
+        MEMINFO = Some(E820MemInfo::new(&mut _MEMINFO)?);
     }
 
     Ok(())
