@@ -1,3 +1,5 @@
+use core::mem::size_of;
+
 /// This module is only intended to be used by bootloader to setup a initial GDT
 use i386::dt::{packers::*, consts::*};
 use i386::dt::{DescriptorTable, Descriptor, DTType};
@@ -6,7 +8,7 @@ use i386::ring::Privilege;
 
 /// The length of GDT, 8 by default (include a null entry).
 /// Current max length is 0x100 / 8 = 32, which is specified in linker script in stage 2
-const GDT_MAX_LEN: usize = GDT_SIZE as usize / 8;
+const GDT_MAX_LEN: usize = GDT_SIZE as usize / size_of::<Descriptor>();
 
 /// number of GDT entries which are hard-coded.
 const GDT_RESERVED_LEN: usize = 8;

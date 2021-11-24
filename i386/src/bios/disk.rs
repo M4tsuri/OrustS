@@ -23,7 +23,7 @@ pub struct DAP {
 
 #[inline(always)]
 fn extended_read_sectors(disk: u8, dap_ptr: *const DAP) -> Result<(), &'static str> {
-    let mut res: u8;
+    let mut res: u16;
     unsafe {
         asm! {
             "push si",
@@ -31,11 +31,11 @@ fn extended_read_sectors(disk: u8, dap_ptr: *const DAP) -> Result<(), &'static s
             "int 0x13",
             "pop si",
             si = in(reg) dap_ptr,
-            inout("ah") 0x42_i8 => res,
+            inout("ax") 0x4200_u16 => res,
             in("dl") disk,
         }
     }
-    if res == 0 {
+    if res >> 8 == 0 {
         Ok(())
     } else {
         Err("Disk Error.\n")
@@ -50,15 +50,15 @@ pub fn read_disk(addr: (u8, u64), buffer: &mut [u8]) -> Result<(), &'static str>
 }
 
 pub fn reset_disk(disk_id: u8) -> Result<(), &'static str> {
-    let mut res: u8;
+    let mut res: u16;
     unsafe {
         asm! {
             "int 13h",
             in("dl") disk_id,
-            inout("ah") 0_u8 => res
+            inout("ax") 0_u16 => res
         }
     }
-    if res == 0 {
+    if res >> 8 == 0 {
         Ok(())
     } else {
         Err("Disk Error.\n")

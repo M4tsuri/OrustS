@@ -8,16 +8,17 @@ pub fn display_real(src: &str) {
     unsafe {
         asm! {
             "push bp",
+            "push bx",
             "mov bp, ax",
             "mov ax, 01301h",
             "mov bx, 000ch",
             "mov dl, 0",
             "int 10h",
+            "pop bx",
             "pop bp",
             in("ax") ptr,
             in("cx") len,
             out("dl") _,
-            out("bx") _,
         }
     }
 }
