@@ -3,10 +3,12 @@
 #![feature(asm)]
 
 mod display;
+mod load_kernel;
 
 use core::panic::PanicInfo;
 use display::display_at;
 use shared::{layout::STACK_END, gdt::GDTSelector};
+use load_kernel::load_kernel;
 
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
@@ -48,6 +50,7 @@ fn init_protect() {
 /// The main function of stage 3. 
 /// This function should collect all possible errors so we can deal with them in _start.
 fn main() -> Result<(), &'static str> {
+    load_kernel()?;
     // switch to real mode and poweroff, just for illustrating our mode switching works.
     // crate::mode_switch::to_real(crate::mode_switch::poweroff as u16);
     Ok(())
