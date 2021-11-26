@@ -19,7 +19,7 @@ pub fn pause() {
 pub fn inb(port: u16) -> u8 {
     let data: u8;
     unsafe {
-        asm!("in dx, al", in("dx") port, out("al") data)
+        asm!("in al, dx", in("dx") port, out("al") data)
     }
     data
 }
@@ -28,7 +28,7 @@ pub fn inb(port: u16) -> u8 {
 pub fn inw(port: u16) -> u16 {
     let data: u16;
     unsafe {
-        asm!("in dx, ax", in("dx") port, out("ax") data)
+        asm!("in ax, dx", in("dx") port, out("ax") data)
     }
     data
 }
@@ -37,7 +37,7 @@ pub fn inw(port: u16) -> u16 {
 pub fn indw(port: u16) -> u32 {
     let data: u32;
     unsafe {
-        asm!("in dx, eax", in("dx") port, out("eax") data)
+        asm!("in eax, dx", in("dx") port, out("eax") data)
     }
     data
 }
