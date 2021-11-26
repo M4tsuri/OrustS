@@ -104,11 +104,11 @@ impl ATADriver {
     fn pio48_read_sectors(&self, lba: u64, buf: &mut [u8]) -> Result<(), ATAError> {
         let sector_num = (buf.len() as u32 >> SECTOR_ALIGN) as u16;
         let drive = match self {
-            ATADriver::PRIMARY => 0x50,
-            ATADriver::SECONDARY => 0x40
+            ATADriver::PRIMARY => 0x40,
+            ATADriver::SECONDARY => 0x50
         };
         // select drive
-        outb(self.drive(), drive | (1 << 4));
+        outb(self.drive(), drive);
         // set pio mode 
         outb(self.feature(), ATAFeature::PIO as u8);
 
