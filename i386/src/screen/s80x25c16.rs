@@ -3,9 +3,9 @@ use super::VideoBuf;
 pub const HEIGHT: usize = 25;
 pub const WIDTH: usize = 80;
 
-pub type Buffer<'a> = &'a mut [[u16; WIDTH]; HEIGHT];
+pub type Buffer = [[u16; WIDTH]; HEIGHT];
 
-impl<'a> VideoBuf for Buffer<'a> {
+impl VideoBuf for Buffer {
     type Item = u16;
 
     fn get_shape(&self) -> (usize, usize) {
