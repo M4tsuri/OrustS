@@ -33,10 +33,6 @@ pub enum GDTSelector {
     /// The DPL and RPL of a stack segment descriptor and selector must be
     /// the same with the CPL when loading to ss register.
     STACK = pack_selector(3, DTType::GDT, Privilege::Ring0),
-    VIDEO = pack_selector(4, DTType::GDT, Privilege::Ring0),
-    SWITCH = pack_selector(5, DTType::GDT, Privilege::Ring0),
-    NORMAL = pack_selector(6, DTType::GDT, Privilege::Ring0),
-    LDT = pack_selector(7, DTType::GDT, Privilege::Ring0)
 }
 
 const fn init_gdt() -> [u64; GDT_MAX_LEN] {
@@ -56,10 +52,6 @@ const fn init_gdt() -> [u64; GDT_MAX_LEN] {
     // Stack Segment, unlimited
     gdt[3] = pack_desc(0, 0, 
         SEGD_DOWN | SEGD_WRITE, TYPE_CD,
-        Privilege::Ring0, true, ATTR_SEG32, 0);
-    // Video RAM
-    gdt[4] = pack_desc(VIDEO_START, VIDEO_SIZE - 1, 
-        SEGD_WRITE, TYPE_CD, 
         Privilege::Ring0, true, ATTR_SEG32, 0);
     gdt
 }

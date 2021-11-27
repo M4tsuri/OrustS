@@ -23,17 +23,15 @@ fn init_protect() {
             "mov ax, {data}",
             "mov ds, ax",
             "mov es, ax",
+            "mov gs, ax",
             "mov ax, {stack}",
             "mov ss, ax",
             "mov esp, {stack_but}",
             "mov ax, {null}",
             "mov fs, ax",
-            "mov ax, {video}",
-            "mov gs, ax",
             data = const GDTSelector::DATA as u16,
             stack = const GDTSelector::STACK as u16,
             null = const GDTSelector::NULL as u16,
-            video = const GDTSelector::VIDEO as u16,
             stack_but = const STACK_END - 0x10,
             out("ax") _
         }
