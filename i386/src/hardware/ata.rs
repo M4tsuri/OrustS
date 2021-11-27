@@ -5,94 +5,80 @@ use crate::instrs::inb;
 
 pub mod pio;
 
-const ATA_CMD_PACKET: u8 = 0xa0;
-const ATA_CMD_READ_EXT: u8 = 0x24;
-
-const ATA_FEATURE_PIO: u8 = 0x0;
-
-const ATA_STATUS_ERR: u8 = 0b00000001;
-const ATA_STATUS_DRQ: u8 = 0b00001000;
-const ATA_STATIS_DF:  u8 = 0b00100000;
-const ATA_STATUS_RDY: u8 = 0b01000000;
-const ATA_STATUS_BSY: u8 = 0b10000000;
-
-
-
-#[derive(Clone, Copy)]
-#[repr(u16)]
-pub enum ATA_BUS {
-    PRIMARY = 0x1F0,
-    SECONDARY = 0x170
+#[repr(u8)]
+enum ATADCR {
+    /// software reset, this command should be sent to Device Control Register
+    SFTRST = 0b00000100,
+    /// bus reset, this command should be sent to Device Control Register
+    BUSRST = 0b00000000
 }
 
 #[repr(u8)]
-pub enum ATA_DRIVE28 {
-    PRIMARY = 0xA0,
-    SECONDARY = 0xB0
+enum ATACommand {
+    ReadExt = 0x24,
+    Identify = 0xEC
 }
 
 #[repr(u8)]
-pub enum ATA_DRIVE48 {
-    PRIMARY = 0x50,
-    SECONDARY = 0x40
+enum ATAFeature {
+    PIO = 0x0,
 }
 
-#[inline]
-const fn data_reg(bus: ATA_BUS) -> u16 {
-    bus as u16 + 0
+#[allow(dead_code)]
+#[repr(u8)]
+enum ATAStatus {
+    ERR = 0b00000001,
+    DRQ = 0b00001000,
+    DF = 0b00100000,
+    RDY = 0b01000000,
+    BSY = 0b10000000
 }
 
-/// for writing 
-#[inline]
-const fn feature_reg(bus: ATA_BUS) -> u16 {
-    bus as u16 + 1
+pub enum ATAError {
+    BufferNotAligned,
+    LBATooLarge,
+    DiskError(u8),
+    DeviceNotExist,
+    NotATADevice
 }
 
-/// for reading
-#[inline]
-const fn error_reg(bus: ATA_BUS) -> u16 {
-    bus as u16 + 1
+pub enum ATADriver {
+    PRIMARY,
+    SECONDARY
 }
 
-#[inline]
-const fn sector_num_reg(bus: ATA_BUS) -> u16 {
-    bus as u16 + 2
+#[allow(dead_code)]
+impl ATADriver {
+    const fn io_base(&self) -> u16 {
+        match self {
+            &Self::PRIMARY => 0x1f0,
+            &Self::SECONDARY => 0x170
+        }
+    }
+
+    const fn data(&self) -> u16 { self.io_base() + 0 }
+    const fn feature(&self) ->  u16 { self.io_base() + 1 }
+    /// for reading
+    const fn error(&self) -> u16 { self.io_base() + 1 }
+    const fn sector_num(&self) -> u16 { self.io_base() + 2 }
+    const fn lba_lo(&self) -> u16 { self.io_base() + 3 }
+    const fn lba_mid(&self) -> u16 { self.io_base() + 4 }
+    const fn lba_hi(&self) -> u16 { self.io_base() + 5 }/// Used to select a drive and/or head.   Supports extra address/flag bits.
+    const fn drive(&self) -> u16 { self.io_base() + 6 }/// for reading
+    const fn status(&self) -> u16 { self.io_base() + 7 }/// for writing 
+    const fn command(&self) -> u16 { self.io_base() + 7 }
+
+    const fn ctrl_base(&self) -> u16 { 0x376 }
+    const fn dcr(&self) -> u16 { self.ctrl_base() + 0 }
+    const fn alt_status(&self) -> u16 { self.ctrl_base() + 0 }
+    /// drive address register
+    const fn dar(&self) -> u16 { self.ctrl_base() + 1 }
+
+    fn ata_delay_400ns(&self) {
+        inb(self.status());
+        inb(self.status());
+        inb(self.status());
+        inb(self.status());
+    }
 }
 
-#[inline]
-const fn lba_lo_reg(bus: ATA_BUS) -> u16 {
-    bus as u16 + 3
-}
-
-#[inline]
-const fn lba_mid_reg(bus: ATA_BUS) -> u16 {
-    bus as u16 + 4
-}
-
-#[inline]
-const fn lba_hi_reg(bus: ATA_BUS) -> u16 {
-    bus as u16 + 5
-}
-
-/// Used to select a drive and/or head. Supports extra address/flag bits.
-#[inline]
-const fn drive_reg(bus: ATA_BUS) -> u16 {
-    bus as u16 + 6
-}
-
-/// for reading
-#[inline]
-const fn status_reg(bus: ATA_BUS) -> u16 {
-    bus as u16 + 7
-}
-
-/// for writing 
-#[inline]
-const fn command_reg(bus: ATA_BUS) -> u16 {
-    bus as u16 + 7
-}
-
-#[inline]
-const fn dcr_reg(bus: ATA_BUS) -> u16 {
-    bus as u16 + 0x206
-}

@@ -31,6 +31,7 @@ fn build(target: &Path) {
         .map(|x| read_to_bytes(x))
         .fold(target, 
             |mut f, bin| {
+                println!("Size is {}", bin.len());
                 f.write(&bin).unwrap(); 
                 f 
             }
@@ -46,7 +47,7 @@ fn run(target: &Path) {
         .args(["-d", "int"])
         .arg("-no-reboot")
         .arg("-drive")
-        .arg(&format!("format=raw,index=0,media=disk,file={}", target.to_str().unwrap()))
+        .arg(&format!("format=raw,index=0,if=ide,media=disk,file={}", target.to_str().unwrap()))
         .args(["-vga", "std"])
         .spawn().unwrap();
 }
@@ -60,7 +61,7 @@ fn debug(target: &Path) {
         .args(["-d", "int"])
         .arg("-no-reboot")
         .arg("-drive")
-        .arg(&format!("format=raw,index=0,media=disk,file={}", target.to_str().unwrap()))
+        .arg(&format!("format=raw,index=0,if=ide,media=disk,file={}", target.to_str().unwrap()))
         .args(["-vga", "std", "-s", "-S"])
         .spawn().unwrap();
 }

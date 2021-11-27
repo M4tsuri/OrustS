@@ -1,12 +1,13 @@
 #![no_std]
 #![no_main]
 #![feature(asm)]
+#![feature(const_slice_from_raw_parts)]
 
 mod display;
 mod load_kernel;
 
 use core::panic::PanicInfo;
-use display::display_at;
+use display::{print, scr_clear};
 use shared::{layout::STACK_END, gdt::GDTSelector};
 use load_kernel::load_kernel;
 
@@ -15,25 +16,23 @@ fn panic(_info: &PanicInfo) -> ! {
     loop {}
 }
 
-#[inline]
+#[inline(always)]
 fn init_protect() {
     unsafe {
         // 5. Load DS, SS, ES, FS and GS with corresponding GDT selectors
         asm! {
             "mov ax, {data}",
             "mov ds, ax",
+            "mov es, ax",
+            "mov gs, ax",
             "mov ax, {stack}",
             "mov ss, ax",
             "mov esp, {stack_but}",
             "mov ax, {null}",
-            "mov es, ax",
             "mov fs, ax",
-            "mov ax, {video}",
-            "mov gs, ax",
             data = const GDTSelector::DATA as u16,
             stack = const GDTSelector::STACK as u16,
             null = const GDTSelector::NULL as u16,
-            video = const GDTSelector::VIDEO as u16,
             stack_but = const STACK_END - 0x10,
             out("ax") _
         }
@@ -49,8 +48,11 @@ fn init_protect() {
 
 /// The main function of stage 3. 
 /// This function should collect all possible errors so we can deal with them in _start.
+/// This function must not be inlined.
+#[inline(never)]
 fn main() -> Result<(), &'static str> {
     load_kernel()?;
+    print("Kernel loaded.");
     // switch to real mode and poweroff, just for illustrating our mode switching works.
     // crate::mode_switch::to_real(crate::mode_switch::poweroff as u16);
     Ok(())
@@ -58,14 +60,17 @@ fn main() -> Result<(), &'static str> {
 
 /// Now we initially entered. According to *Intel Developer Manual Vol. 3A 9-13*, 
 /// Execution in protect mode begins with a CPL with 0.
+/// Note that this function cannot have local varibales because we manually set esp
 #[link_section = ".startup"]
 #[no_mangle]
 fn _start() -> ! {
+    // FIXME: This function call must come before any function prelude, \
+    // however currently there is no such guarantee
     init_protect();
-    display_at(10, 0, "In Protect Mode Now.");
+    scr_clear();
     
     if let Err(msg) = main() {
-        display_at(0, 0, msg);
+        print(msg);
         unsafe { asm!("hlt"); }
     }
     loop {}

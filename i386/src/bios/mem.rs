@@ -1,6 +1,6 @@
 use core::mem::size_of;
 
-use crate::addr::to_addr16;
+use crate::utils::addr::to_addr16;
 
 /// The type of a memory range, returned by e820 syscall
 #[derive(Clone, Copy)]
