@@ -4,6 +4,12 @@ An i386 operation system written in pure rust (for fun and no profit).
 
 This operation system is under active developing.
 
+## Usage
+
+- `cargo kbuild build` to build
+- `cargo kbuild run` to run it with qemu
+- `cargo kbuild debug` to wait for gdb attach on port 1234
+
 ## Checklist
 
 - [ ] implement a bootloader
