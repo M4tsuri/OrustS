@@ -1,31 +1,31 @@
-MEMORY {
-    code (rx) : ORIGIN = {{#with stage3}}{{body}}{{/with}}, LENGTH = {{#with stage3}}{{data}}{{/with}} - {{#with stage3}}{{body}}{{/with}}
-    data (rw) : ORIGIN = {{#with stage3}}{{data}}{{/with}}, LENGTH = {{#with global}}{{start}}{{/with}} - {{#with stage3}}{{data}}{{/with}}
-}
-
 ENTRY(_start);
 
 SECTIONS {
+    {{#with global}}
+    .video {{video}} (NOLOAD) : {
+        *(.video)
+    }
+    {{/with}}
+
     {{#with stage3}}
-    .body : {  
+    .body {{body}} : {  
         KEEP(*(.startup))
         *(.text*)
         FILL(0)
-        . = ORIGIN(code) + LENGTH(code);
-    } > code
+        . = {{data}};
+    }
 
-    .data : {
+    .data {{data}} : {
         *(.rodata*)
         *(.data*)
         *(.bss*)
-    } > data
+    }
     {{/with}}
 
     .fill : {
         FILL(0)
-        . = ORIGIN(data) + LENGTH(data) - 1;
+        . = {{#with global}}{{start}}{{/with}} - 1;
         BYTE(0)
     }
-
     /DISCARD/ : { *(.eh_frame*) *(.discard)}
 }
