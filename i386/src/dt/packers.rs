@@ -1,4 +1,4 @@
-use crate::bitwise::mask_assign;
+use crate::utils::bitwise::mask_assign;
 use crate::ring::Privilege;
 use super::consts::*;
 use super::{Descriptor, Selector, DTType};
