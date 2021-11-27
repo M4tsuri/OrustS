@@ -1,12 +1,13 @@
 #![no_std]
 #![no_main]
 #![feature(asm)]
+#![feature(const_slice_from_raw_parts)]
 
 mod display;
 mod load_kernel;
 
 use core::panic::PanicInfo;
-use display::display_at;
+use display::{print, scr_clear};
 use shared::{layout::STACK_END, gdt::GDTSelector};
 use load_kernel::load_kernel;
 
@@ -51,7 +52,7 @@ fn init_protect() {
 #[inline(never)]
 fn main() -> Result<(), &'static str> {
     load_kernel()?;
-    display_at(9, 0, "Kernel loaded.");
+    print("Kernel loaded.");
     // switch to real mode and poweroff, just for illustrating our mode switching works.
     // crate::mode_switch::to_real(crate::mode_switch::poweroff as u16);
     Ok(())
@@ -66,10 +67,10 @@ fn _start() -> ! {
     // FIXME: This function call must come before any function prelude, \
     // however currently there is no such guarantee
     init_protect();
-    display_at(10, 0, "In Protect Mode Now.");
+    scr_clear();
     
     if let Err(msg) = main() {
-        display_at(0, 0, msg);
+        print(msg);
         unsafe { asm!("hlt"); }
     }
     loop {}

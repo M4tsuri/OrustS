@@ -7,22 +7,22 @@ pub enum VideoError {
 }
 
 #[derive(Clone, Copy)]
-pub struct Cursor(usize, usize);
+pub struct Cursor(pub usize, pub usize);
 
-pub struct Screen<'a, T> 
+pub struct Screen<T> 
 where
-    T: VideoBuf + ?Sized
+    T: VideoBuf
 {
     /// The cursor always points to the location after the previous writing
-    cursor: Cursor,
-    buf: &'a mut T
+    pub cursor: Cursor,
+    pub buf: T
 }
 
-impl<'a, T: VideoBuf + Sized> Iterator for Screen<'a, T> {
+impl<T: VideoBuf> Iterator for Screen<T> {
     type Item = Cursor;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let (height, width) = self.buf.get_shape();
+        let (_, width) = self.buf.get_shape();
         let cursor = self.cursor;
         // check if we need wrap line
         if self.cursor.1 == width - 1 {
@@ -35,14 +35,7 @@ impl<'a, T: VideoBuf + Sized> Iterator for Screen<'a, T> {
     }
 }
 
-impl<'a, T: VideoBuf + Sized> Screen<'a, T> {
-    pub fn new(buf: &'a mut T) -> Self {
-        Self {
-            cursor: Cursor(0, 0),
-            buf
-        }
-    }
-
+impl<T: VideoBuf> Screen<T> {
     /// The cursor will not move if its already at the last line.
     /// Return true if a cursor movement occurs
     pub fn cursor_down(&mut self) -> bool {
@@ -90,24 +83,24 @@ pub trait VideoBuf {
 
 pub trait Printable {
     /// return the length of displayed string on ok
-    fn putc(&mut self, src: u8) -> Result<usize, VideoError> {
+    fn putc(&mut self, src: u8) {
         self.print_raw(&[src])
     }
 
-    fn print(&mut self, src: &str) -> Result<usize, VideoError> {
+    fn print(&mut self, src: &str) {
         self.print_raw(src.as_bytes())
     }
 
-    fn println(&mut self, src: &str) -> Result<usize, VideoError> {
-        self.print(src)?;
+    fn println(&mut self, src: &str) {
+        self.print(src);
         self.putc(b'\n')
     }
 
-    fn print_raw(&mut self, src: &[u8]) -> Result<usize, VideoError>;
+    fn print_raw(&mut self, src: &[u8]);
 }
 
-impl<'a, T: VideoBuf + Sized> Printable for Screen<'a, T> {
-    fn print_raw(&mut self, src: &[u8]) -> Result<usize, VideoError> {
+impl<T: VideoBuf> Printable for Screen<T> {
+    fn print_raw(&mut self, src: &[u8]) {
         for &ch in src {
             // FIXME: we should deal with newline in print function 
             if ch == b'\n' {
@@ -118,7 +111,5 @@ impl<'a, T: VideoBuf + Sized> Printable for Screen<'a, T> {
             let cur = self.next().unwrap();
             self.buf.set_at(cur, item);
         }
-        
-        Ok(src.len())
     }
 }
