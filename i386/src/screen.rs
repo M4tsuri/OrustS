@@ -9,16 +9,16 @@ pub enum VideoError {
 #[derive(Clone, Copy)]
 pub struct Cursor(pub usize, pub usize);
 
-pub struct Screen<'a, T> 
+pub struct Screen<T> 
 where
     T: VideoBuf
 {
     /// The cursor always points to the location after the previous writing
     pub cursor: Cursor,
-    pub buf: &'a mut T
+    pub buf: T
 }
 
-impl<'a, T: VideoBuf> Iterator for Screen<'a, T> {
+impl<T: VideoBuf> Iterator for Screen<T> {
     type Item = Cursor;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -35,7 +35,7 @@ impl<'a, T: VideoBuf> Iterator for Screen<'a, T> {
     }
 }
 
-impl<'a, T: VideoBuf> Screen<'a, T> {
+impl<T: VideoBuf> Screen<T> {
     /// The cursor will not move if its already at the last line.
     /// Return true if a cursor movement occurs
     pub fn cursor_down(&mut self) -> bool {
@@ -99,7 +99,7 @@ pub trait Printable {
     fn print_raw(&mut self, src: &[u8]);
 }
 
-impl<'a, T: VideoBuf> Printable for Screen<'a, T> {
+impl<T: VideoBuf> Printable for Screen<T> {
     fn print_raw(&mut self, src: &[u8]) {
         for &ch in src {
             // FIXME: we should deal with newline in print function 
