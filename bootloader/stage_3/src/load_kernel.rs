@@ -14,7 +14,7 @@ pub fn load_kernel() -> Result<(), &'static str> {
     let kernel_lba = (STAGE1_SIZE + STAGE2_SIZE + STAGE3_SIZE) >> SECTOR_ALIGN;
     
     let res = ATADriver::PRIMARY.pio_identify()
-        .map_err(|_| "Disk Error.")?;
+        .map_err(|_| "Disk Error when identifying.\n")?;
     ATADriver::PRIMARY.pio_read_sectors(kernel_lba as u64, kernel_buf)
-        .map_err(|_| "Disk Error.")
+        .map_err(|_| "Disk Error when reading.\n")
 }

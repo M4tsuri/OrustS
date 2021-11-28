@@ -20,7 +20,7 @@ SECTIONS {
 
     .fill : {
         FILL(0)
-        . = 196608 - 1;
+        . = 327680 - 1;
         BYTE(0)
     }
     /DISCARD/ : { *(.eh_frame*) *(.discard)}
