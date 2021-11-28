@@ -8,42 +8,11 @@ mod load_kernel;
 
 use core::panic::PanicInfo;
 use display::{print, scr_clear};
-use shared::{layout::STACK_END, gdt::GDTSelector};
 use load_kernel::load_kernel;
 
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
     loop {}
-}
-
-#[inline(always)]
-fn init_protect() {
-    unsafe {
-        // 5. Load DS, SS, ES, FS and GS with corresponding GDT selectors
-        asm! {
-            "mov ax, {data}",
-            "mov ds, ax",
-            "mov es, ax",
-            "mov gs, ax",
-            "mov ax, {stack}",
-            "mov ss, ax",
-            "mov esp, {stack_but}",
-            "mov ax, {null}",
-            "mov fs, ax",
-            data = const GDTSelector::DATA as u16,
-            stack = const GDTSelector::STACK as u16,
-            null = const GDTSelector::NULL as u16,
-            stack_but = const STACK_END - 0x10,
-            out("ax") _
-        }
-
-        // 6. re-enable hardware interrupts
-        // TODO: Enable hardware interrupt.
-        // Currently directly executing sti instruction causes weird behavior of QEMU 
-        // due to the lack of IDT.
-        // See https://lists.gnu.org/archive/html/qemu-discuss/2015-01/msg00033.html
-        // asm!("sti")
-    }
 }
 
 /// The main function of stage 3. 
@@ -64,9 +33,6 @@ fn main() -> Result<(), &'static str> {
 #[link_section = ".startup"]
 #[no_mangle]
 fn _start() -> ! {
-    // FIXME: This function call must come before any function prelude, \
-    // however currently there is no such guarantee
-    init_protect();
     scr_clear();
     
     if let Err(msg) = main() {

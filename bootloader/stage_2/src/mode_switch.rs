@@ -1,6 +1,7 @@
 use core::{intrinsics::transmute, marker::PhantomData};
 
 use shared::gdt::{GDTSelector, GDT_TABLE};
+use shared::layout::STACK_END;
 use i386::{dt::gdt::GDTDescriptor, instrs::*};
 
 use crate::{display::display_real, img_load::STAGE3_PTR};
@@ -35,16 +36,33 @@ pub fn to_protect() -> ! {
             "mov eax, cr0",
             "or eax, 1",
             "mov cr0, eax",
-            out("eax") _
-        }
-
+        // 5. Load DS, SS, ES, FS and GS with corresponding GDT selectors
+            "mov ax, {data}",
+            "mov ds, ax",
+            "mov es, ax",
+            "mov gs, ax",
+            "mov ax, {stack}",
+            "mov ss, ax",
+            "mov esp, {stack_but}",
+            "mov ax, {null}",
+            "mov fs, ax",
+        // 6. re-enable hardware interrupts
+        // TODO: Enable hardware interrupt.
+        // Currently directly executing sti instruction causes weird behavior of QEMU 
+        // due to the lack of IDT.
+        // See https://lists.gnu.org/archive/html/qemu-discuss/2015-01/msg00033.html
+        //  "sti"
         // 4. Do a far jump to the next instruction to serialize the processer 
         //    (clear the pipeline, I don't know how does this work =-=)
         //    This step also sets the cs register.
-        asm! {
             "jmp {CS}, offset {target}",
+            data = const GDTSelector::DATA as u16,
+            stack = const GDTSelector::STACK as u16,
+            null = const GDTSelector::NULL as u16,
+            stack_but = const STACK_END - 0x10,
             CS = const GDTSelector::CODE as u16,
-            target = sym to_stage3
+            target = sym to_stage3,
+            out("eax") _,
         }
     }
 
@@ -53,6 +71,7 @@ pub fn to_protect() -> ! {
 
 #[no_mangle]
 fn to_stage3() -> ! {
-    let stage_3: fn() -> ! = unsafe { transmute(&STAGE3_PTR as *const PhantomData<()>) };
-    stage_3()
+    (unsafe { 
+        transmute::<*const PhantomData<()>, fn() -> !>(&STAGE3_PTR as *const PhantomData<()>)
+    })()
 }
