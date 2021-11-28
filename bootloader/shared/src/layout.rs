@@ -37,7 +37,7 @@ pub const GDT_SIZE: usize = GDT_END - GDT_START;
 pub const STAGE2_END: usize = 65536;
 pub const STAGE3_START: usize = 65536;
 
-pub const STAGE3_END: usize = 196608;
+pub const STAGE3_END: usize = 327680;
 
 pub const KERNEL_START: usize = 1048576;
 pub const KERNEL_END: usize = 2097152;

@@ -80,9 +80,9 @@ impl ATADriver {
         }
     }
 
-    pub fn pio_read_sectors(&self, lba: u64, buf: &mut [u8]) -> Result<(), ATAError> {
-        if buf.len() as u32 & (SECTOR_SIZE - 1) != 0 {
-            return Err(ATAError::BufferNotAligned)
+    pub fn pio_read_sectors(&self, lba: u64, buf: &mut [u8], sec_num: u64) -> Result<(), ATAError> {
+        if (buf.len() as u64) < (sec_num << SECTOR_ALIGN) {
+            return Err(ATAError::BufferOverflow)
         }
         
         let status = inb(self.alt_status());
@@ -92,7 +92,7 @@ impl ATADriver {
         }
 
         if (lba + (buf.len() as u64 >> 9)) >> 33 == 0 {
-            self.pio48_read_sectors(lba, buf)
+            self.pio48_read_sectors(lba, buf, sec_num)
         } else {
             return Err(ATAError::LBATooLarge)
         }
@@ -101,8 +101,7 @@ impl ATADriver {
 
     /// read sectors in PIO mode, this has huge performance issue. So it should only be used
     /// in bootloader for loading kernel into memory.
-    fn pio48_read_sectors(&self, lba: u64, buf: &mut [u8]) -> Result<(), ATAError> {
-        let sector_num = (buf.len() as u32 >> SECTOR_ALIGN) as u16;
+    fn pio48_read_sectors(&self, lba: u64, buf: &mut [u8], sec_num: u64) -> Result<(), ATAError> {
         let drive = match self {
             ATADriver::PRIMARY => 0x40,
             ATADriver::SECONDARY => 0x50
@@ -113,11 +112,11 @@ impl ATADriver {
         outb(self.feature(), ATAFeature::PIO as u8);
 
         // send parameters
-        outb(self.sector_num(), ((sector_num >> 8) & 0xff) as u8);
+        outb(self.sector_num(), ((sec_num >> 8) & 0xff) as u8);
         outb(self.lba_lo(), (lba >> 24 & 0xff) as u8);
         outb(self.lba_mid(), (lba >> 32 & 0xff) as u8);
         outb(self.lba_hi(), (lba >> 48 & 0xff) as u8);
-        outb(self.sector_num(), ((sector_num >> 0) & 0xff) as u8);
+        outb(self.sector_num(), ((sec_num >> 0) & 0xff) as u8);
         outb(self.lba_lo(), (lba >> 0 & 0xff) as u8);
         outb(self.lba_mid(), (lba >> 8 & 0xff) as u8);
         outb(self.lba_hi(), (lba >> 16 & 0xff) as u8);
