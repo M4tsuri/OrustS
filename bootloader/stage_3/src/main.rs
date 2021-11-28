@@ -9,8 +9,8 @@ mod load_kernel;
 extern crate alloc;
 
 use core::{alloc::Layout, panic::PanicInfo};
-use alloc::format;
-use display::{print, scr_clear};
+use alloc::string::String;
+use display::{print, scr_clear, println};
 use load_kernel::load_kernel;
 use static_alloc::Bump;
 
@@ -31,7 +31,7 @@ fn oom(_layout: Layout) -> ! {
 /// This function should collect all possible errors so we can deal with them in _start.
 /// This function must not be inlined.
 #[inline(never)]
-fn main() -> Result<(), &'static str> {
+fn main() -> Result<(), String> {
     load_kernel()?;
     print("Kernel loaded.");
     // switch to real mode and poweroff, just for illustrating our mode switching works.
@@ -46,9 +46,9 @@ fn main() -> Result<(), &'static str> {
 fn _start() -> ! {
     scr_clear();
     
-    print(&format!("hello {}\n", "world"));
+    println("Loading kernel into RAM...");
     if let Err(msg) = main() {
-        print(msg);
+        println(&msg);
         unsafe { asm!("hlt"); }
     }
     loop {}

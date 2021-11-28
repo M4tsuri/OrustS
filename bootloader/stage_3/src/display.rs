@@ -16,3 +16,7 @@ pub fn scr_clear() {
 pub fn print(s: &str) {
     unsafe { SCREEN.print(s); }
 }
+
+pub fn println(s: &str) {
+    unsafe { SCREEN.print(s); SCREEN.putc(b'\n') }
+}

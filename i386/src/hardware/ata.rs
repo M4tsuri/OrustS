@@ -1,3 +1,7 @@
+extern crate alloc;
+
+use alloc::{format, string::String};
+
 use crate::instrs::inb;
 
 /// Support for some useful ATA PIO commands
@@ -35,11 +39,23 @@ enum ATAStatus {
 }
 
 pub enum ATAError {
-    BufferNotAligned,
+    BufferOverflow,
     LBATooLarge,
     DiskError(u8),
     DeviceNotExist,
     NotATADevice
+}
+
+impl Into<String> for ATAError {
+    fn into(self) -> String {
+        match self {
+            Self::DiskError(i) => format!("Disk Error: {}", i),
+            Self::BufferOverflow => "Disk Error: Overflow".into(),
+            Self::LBATooLarge => "Disk Error: LBA too large".into(),
+            Self::DeviceNotExist => "Disk Error: not found".into(),
+            Self::NotATADevice => "Disk Error: not ATA".into(),
+        }
+    }
 }
 
 pub enum ATADriver {
