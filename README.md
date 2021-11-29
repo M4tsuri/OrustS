@@ -16,7 +16,7 @@ This operation system is under active developing.
   - [x] build a staged bootloader demo
   - [x] enable the A20 line
   - [x] setup GDT
-  - [ ] load kernel image into ram
+  - [x] load kernel image into ram
   - [x] transfer into protect mode
   - [ ] [optional] setup page table
   - [ ] transfer control to kernel
