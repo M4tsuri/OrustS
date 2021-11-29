@@ -1,6 +1,8 @@
 #![no_std]
 #![no_main]
 #![feature(asm)]
+#![feature(asm_const)]
+#![feature(asm_sym)]
 
 mod mode_switch;
 mod display;
@@ -22,7 +24,7 @@ fn panic(_info: &PanicInfo) -> ! {
 
 fn main() -> Result<(), &'static str> {
     display_real("Stage 2 entered.");
-    load_stage3()?;
+    load_stage3().or(Err("Disk Error."))?;
     display_real("Stage 3 loaded.");
 
     // try to enable A20 line

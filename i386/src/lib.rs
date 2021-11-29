@@ -10,3 +10,4 @@ pub mod tss;
 pub mod instrs;
 pub mod hardware;
 pub mod screen;
+pub mod fs;

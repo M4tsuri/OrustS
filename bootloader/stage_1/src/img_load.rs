@@ -1,7 +1,8 @@
 /// This module loads the second stage image into memory.
 
 use core::{intrinsics::transmute, marker::PhantomData};
-use i386::bios::disk::{SECTOR_ALIGN, read_disk, reset_disk};
+use i386::bios::disk::{DAPError, size_to_lba};
+use i386::fs::{FSError, FileSystem, nofs::real::NoFSReal};
 use shared::layout::{STAGE1_SIZE, STAGE2_SIZE, STAGE2_START};
 
 /// The address of the second stage image.
@@ -16,9 +17,11 @@ pub static STAGE2_PTR: PhantomData<()> = PhantomData;
 pub const STAGE_DISK: u8 = 0x80;
 
 #[inline]
-pub fn load_stage2() -> Result<(), &'static str> {
-    reset_disk(STAGE_DISK)?;
+pub fn load_stage2() -> Result<(), FSError<DAPError>> {
+    let fs = NoFSReal::new(STAGE_DISK)?;
+    let lba = size_to_lba(STAGE1_SIZE);
     let stage_2 = unsafe { transmute::<usize, &mut [u8; STAGE2_SIZE]>(STAGE2_START) };
-    read_disk((STAGE_DISK, (STAGE1_SIZE >> SECTOR_ALIGN) as u64), stage_2)?;
+
+    fs.read(lba, stage_2)?;
     Ok(())
 }

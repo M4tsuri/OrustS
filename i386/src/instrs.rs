@@ -6,8 +6,8 @@ pub fn cli() {
     }
 }
 
-/// The pause instruction is for telling processor that we are 
-/// in a spin-wait loop to make some optimization.
+/// The pause instruction tells processor that we are 
+/// in a spin-wait loop, thus it can make some optimization.
 #[inline(always)]
 pub fn pause() {
     unsafe {

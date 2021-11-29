@@ -11,6 +11,8 @@ extern crate alloc;
 use core::{alloc::Layout, panic::PanicInfo};
 use alloc::string::String;
 use display::{print, scr_clear, println};
+use i386::fs::{FSError, nofs::protected::NoFSProtected};
+use i386::hardware::ata::{ATADriver, ATAError};
 use load_kernel::load_kernel;
 use static_alloc::Bump;
 
@@ -29,10 +31,10 @@ fn oom(_layout: Layout) -> ! {
 
 /// The main function of stage 3. 
 /// This function should collect all possible errors so we can deal with them in _start.
-/// This function must not be inlined.
-#[inline(never)]
 fn main() -> Result<(), String> {
-    load_kernel()?;
+    let fs = NoFSProtected::new(ATADriver::PRIMARY)
+        .map_err(|x| <FSError<ATAError> as Into<String>>::into(x))?;
+    load_kernel(&fs)?;
     print("Kernel loaded.");
     // switch to real mode and poweroff, just for illustrating our mode switching works.
     // crate::mode_switch::to_real(crate::mode_switch::poweroff as u16);

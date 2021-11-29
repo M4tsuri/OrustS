@@ -39,6 +39,7 @@ enum ATAStatus {
 }
 
 pub enum ATAError {
+    BufferNotAligned,
     BufferOverflow,
     LBATooLarge,
     DiskError(u8),
@@ -54,6 +55,7 @@ impl Into<String> for ATAError {
             Self::LBATooLarge => "Disk Error: LBA too large".into(),
             Self::DeviceNotExist => "Disk Error: not found".into(),
             Self::NotATADevice => "Disk Error: not ATA".into(),
+            Self::BufferNotAligned => "Disk Error: alignment".into(),
         }
     }
 }
@@ -72,29 +74,29 @@ impl ATADriver {
         }
     }
 
-    const fn data(&self) -> u16 { self.io_base() + 0 }
-    const fn feature(&self) ->  u16 { self.io_base() + 1 }
+    const fn data_reg(&self) -> u16 { self.io_base() + 0 }
+    const fn feature_reg(&self) ->  u16 { self.io_base() + 1 }
     /// for reading
-    const fn error(&self) -> u16 { self.io_base() + 1 }
-    const fn sector_num(&self) -> u16 { self.io_base() + 2 }
-    const fn lba_lo(&self) -> u16 { self.io_base() + 3 }
-    const fn lba_mid(&self) -> u16 { self.io_base() + 4 }
-    const fn lba_hi(&self) -> u16 { self.io_base() + 5 }/// Used to select a drive and/or head.   Supports extra address/flag bits.
-    const fn drive(&self) -> u16 { self.io_base() + 6 }/// for reading
-    const fn status(&self) -> u16 { self.io_base() + 7 }/// for writing 
-    const fn command(&self) -> u16 { self.io_base() + 7 }
+    const fn error_reg(&self) -> u16 { self.io_base() + 1 }
+    const fn sector_num_reg(&self) -> u16 { self.io_base() + 2 }
+    const fn lba_lo_reg(&self) -> u16 { self.io_base() + 3 }
+    const fn lba_mid_reg(&self) -> u16 { self.io_base() + 4 }
+    const fn lba_hi_reg(&self) -> u16 { self.io_base() + 5 }/// Used to select a drive and/or head.   Supports extra address/flag bits.
+    const fn drive_reg(&self) -> u16 { self.io_base() + 6 }/// for reading
+    const fn status_reg(&self) -> u16 { self.io_base() + 7 }/// for writing 
+    const fn command_reg(&self) -> u16 { self.io_base() + 7 }
 
     const fn ctrl_base(&self) -> u16 { 0x376 }
-    const fn dcr(&self) -> u16 { self.ctrl_base() + 0 }
-    const fn alt_status(&self) -> u16 { self.ctrl_base() + 0 }
+    const fn dcr_reg(&self) -> u16 { self.ctrl_base() + 0 }
+    const fn alt_status_reg(&self) -> u16 { self.ctrl_base() + 0 }
     /// drive address register
     const fn dar(&self) -> u16 { self.ctrl_base() + 1 }
 
     fn ata_delay_400ns(&self) {
-        inb(self.status());
-        inb(self.status());
-        inb(self.status());
-        inb(self.status());
+        inb(self.status_reg());
+        inb(self.status_reg());
+        inb(self.status_reg());
+        inb(self.status_reg());
     }
 }
 
