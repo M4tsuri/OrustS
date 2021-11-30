@@ -1,4 +1,6 @@
-use i386::screen::{Cursor, Printable, Screen, s80x25c16::{Buffer, WIDTH, HEIGHT}};
+use core::fmt::{Arguments, Write};
+
+use i386::screen::{Cursor, Screen, s80x25c16::{Buffer, WIDTH, HEIGHT}};
 
 #[link_section = ".video"]
 static mut VIDEO_BUFFER: Buffer = [[0; WIDTH]; HEIGHT];
@@ -13,10 +15,19 @@ pub fn scr_clear() {
     unsafe { SCREEN.clear() }
 }
 
-pub fn print(s: &str) {
-    unsafe { SCREEN.print(s); }
+pub fn _print(s: Arguments) -> core::fmt::Result {
+    unsafe { SCREEN.write_fmt(s) }
 }
 
-pub fn println(s: &str) {
-    unsafe { SCREEN.print(s); SCREEN.putc(b'\n') }
+/// print with format string 
+#[macro_export]
+macro_rules! print {
+    ($($arg:tt)*) => ($crate::display::_print(format_args!($($arg)*)).unwrap());
+}
+
+/// print with format string with newline
+#[macro_export]
+macro_rules! println {
+    () => (print!("\n"));
+    ($($arg:tt)*) => (print!("{}\n", format_args!($($arg)*)));
 }

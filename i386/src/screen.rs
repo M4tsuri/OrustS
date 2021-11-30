@@ -82,7 +82,6 @@ pub trait VideoBuf {
 }
 
 pub trait Printable {
-    /// return the length of displayed string on ok
     fn putc(&mut self, src: u8) {
         self.print_raw(&[src])
     }
@@ -91,12 +90,14 @@ pub trait Printable {
         self.print_raw(src.as_bytes())
     }
 
-    fn println(&mut self, src: &str) {
-        self.print(src);
-        self.putc(b'\n')
-    }
-
     fn print_raw(&mut self, src: &[u8]);
+}
+
+impl<'a, T: VideoBuf> core::fmt::Write for Screen<'a, T> {
+    fn write_str(&mut self, s: &str) -> core::fmt::Result {
+        self.print_raw(s.as_bytes());
+        Ok(())
+    }
 }
 
 impl<'a, T: VideoBuf> Printable for Screen<'a, T> {
