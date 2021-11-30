@@ -1,9 +1,9 @@
 ENTRY(_start);
 
 SECTIONS {
-    {{#with global}}
-    .video {{video}} (NOLOAD) : {
-        *(.video)
+    {{#with stage2}}
+    .meminfo {{meminfo}} (NOLOAD) : {
+        KEEP(*(.meminfo))
     }
     {{/with}}
 
@@ -27,5 +27,11 @@ SECTIONS {
         . = {{#with global}}{{start}}{{/with}} - 1;
         BYTE(0)
     }
+
+    {{#with global}}
+    .video {{video}} (NOLOAD) : {
+        *(.video)
+    }
+    {{/with}}
     /DISCARD/ : { *(.eh_frame*) *(.discard)}
 }

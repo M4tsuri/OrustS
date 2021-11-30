@@ -24,32 +24,40 @@ pub struct E820MemRange {
     pub ty: E820MemType
 }
 
-pub struct E820MemInfo<'a> {
+pub struct E820MemInfo<const MAX: usize> {
     pub len: usize,
-    pub ranges: &'a mut [E820MemRange]
+    pub ranges: [E820MemRange; MAX]
 }
 
-unsafe impl<'a> Sync for E820MemInfo<'a> {}
+unsafe impl<const MAX: usize> Sync for E820MemInfo<MAX> {}
 
-impl<'a> E820MemInfo<'a> {
+impl<const MAX: usize> E820MemInfo<MAX> {
+    pub const fn new() -> Self {
+        Self {
+            len: 0,
+            ranges: [E820MemRange {
+                base: 0,
+                len: 0,
+                ty: E820MemType::Undefined
+            }; MAX]
+        }
+    }
     /// read memory information with e820 interrupt. if the lenge of array ranges
     /// is very small, the result may be unsound.
-    pub fn new(ranges: &'a mut [E820MemRange]) -> Result<Self, &'static str> {
-        let len = get_mem_info(ranges)?;
-        Ok(Self {
-            len,
-            ranges
-        })
+    pub fn query(&mut self) -> Option<()> {
+        self.len = get_mem_info(&mut self.ranges)?;
+        Some(())
     }
 
     /// get ranges as a slice, returns None if an error occurred 
     /// (theoritically impossible)
-    pub fn get_ranges(&'a self) -> Option<&'a [E820MemRange]> {
+    pub fn get_ranges<'a>(&'a self) -> Option<&'a [E820MemRange]> {
         self.ranges.get(..self.len)
     }
 }
 
-fn get_mem_info(buf: &mut [E820MemRange]) -> Result<usize, &'static str> {
+/// return the number of read ranges on success, None on failure
+fn get_mem_info(buf: &mut [E820MemRange]) -> Option<usize> {
     let buf_addr = to_addr16(buf.as_ptr() as u32)?;
     let mut range_num: usize;
     let mut is_failed: u16;
@@ -74,8 +82,8 @@ fn get_mem_info(buf: &mut [E820MemRange]) -> Result<usize, &'static str> {
     }
 
     if is_failed == 1 {
-        Err("Error reading memory info")   
+        None
     } else {
-        Ok(range_num / size_of::<E820MemRange>())
+        Some(range_num / size_of::<E820MemRange>())
     }
 }

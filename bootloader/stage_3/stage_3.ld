@@ -1,8 +1,8 @@
 ENTRY(_start);
 
 SECTIONS {
-    .video 753664 (NOLOAD) : {
-        *(.video)
+    .meminfo 65024 (NOLOAD) : {
+        KEEP(*(.meminfo))
     }
 
     .body 65536 : {  
@@ -22,6 +22,10 @@ SECTIONS {
         FILL(0)
         . = 327680 - 1;
         BYTE(0)
+    }
+
+    .video 753664 (NOLOAD) : {
+        *(.video)
     }
     /DISCARD/ : { *(.eh_frame*) *(.discard)}
 }

@@ -16,7 +16,7 @@ SECTIONS {
     }      /* Excutable code */ > rom
     .meminfo {{meminfo}} : {
         KEEP(*(.meminfo))
-    }
+    } > rom
     .gdt {{gdt}} : {
         KEEP(*(.gdt)) 
         FILL(0)
