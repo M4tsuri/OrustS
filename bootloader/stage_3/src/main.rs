@@ -6,6 +6,7 @@
 
 mod display;
 mod load_kernel;
+mod kctx;
 
 extern crate alloc;
 
@@ -33,6 +34,8 @@ fn panic(info: &PanicInfo) -> ! {
 
 #[alloc_error_handler]
 fn oom(_layout: Layout) -> ! {
+    println!("Alloc Error.");
+    unsafe { asm!("hlt") }
     loop {}
 }
 

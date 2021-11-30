@@ -4,7 +4,7 @@ use shared::gdt::{GDTSelector, GDT_TABLE};
 use shared::layout::STACK_END;
 use i386::{dt::gdt::GDTDescriptor, instrs::*};
 
-use crate::{display::display_real, img_load::STAGE3_PTR};
+use crate::img_load::STAGE3_PTR;
 
 /// Transfer cpu mode from real mode to protect mode.
 /// Protect mode privides us with segmentation of physical address space (also called linear address space), 
@@ -19,15 +19,12 @@ pub fn to_protect() -> ! {
      // 1. Disable maskable hardware interrupts
     cli();
 
-    // 2. Execute `lgdt` instruction to load address of GDT to GDTR register.
-    //    Here we directly use a externed symbol in instruction, so linker will help 
-    //    us relocate it to its real address at compile time
-    if let Err(msg) = unsafe { GDTDescriptor::update(&GDT_TABLE) } {
-        display_real(msg);
-        unsafe { asm!("hlt") }
-    }
-
     unsafe {
+        // 2. Execute `lgdt` instruction to load address of GDT to GDTR register.
+        //    Here we directly use a externed symbol in instruction, so linker will help 
+        //    us relocate it to its real address at compile time
+        GDTDescriptor::update(&GDT_TABLE)
+            .or(Err("Error when loading GDT.")).unwrap();
         // 3. Set PE flag in control register CR0, which activates segmentation.
         //    If needed, set PG flag for paging.
         //    Set CR0.PG = 1 and CR4.PAE = 0 (origin value) for 32-bit paging.

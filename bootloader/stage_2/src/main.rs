@@ -12,23 +12,29 @@ mod a20;
 use core::panic::PanicInfo;
 use a20::{check_a20, enable_a20};
 use display::display_real;
-use i386::bios::mem::E820MemInfo;
 use img_load::load_stage3;
 use mode_switch::to_protect;
-use shared::mem::{MEMINFO, _MEMINFO};
+use shared::mem::MEMINFO;
 
 #[panic_handler]
-fn panic(_info: &PanicInfo) -> ! {
+fn panic(info: &PanicInfo) -> ! {
+    // FIXME: currently it does not work, I don't know why 
+    if let Some(msg) = info.payload().downcast_ref::<&'static str>() {
+        display_real(*msg);
+    } else {
+        display_real("Unknown error in stage 2.");
+    }
+    unsafe { asm!("hlt") }
     loop {}
 }
 
-fn main() -> Result<(), &'static str> {
+fn main() {
     display_real("Stage 2 entered.");
-    load_stage3().or(Err("Disk Error."))?;
+    load_stage3().or(Err("Disk Error.")).unwrap();
     display_real("Stage 3 loaded.");
 
     // try to enable A20 line
-    for _ in [0..255] {
+    for _ in 0..255 {
         if check_a20() {
             break;
         }
@@ -36,15 +42,13 @@ fn main() -> Result<(), &'static str> {
     }
 
     if !check_a20() {
-        display_real("A20 not enabled.");
-        unsafe { asm!("hlt") }
+        panic!("A20 not enabled.");
     }
 
     unsafe {
-        MEMINFO = Some(E820MemInfo::new(&mut _MEMINFO)?);
+        MEMINFO.query()
+            .ok_or("Error when getting memory info.").unwrap();
     }
-
-    Ok(())
 }
 
 /// Our entrypoiny of bootloader.
@@ -52,10 +56,6 @@ fn main() -> Result<(), &'static str> {
 #[link_section = ".startup"]
 #[no_mangle]
 fn _start() -> ! {
-    if let Err(msg) = main() {
-        display_real(msg);
-        unsafe { asm!("hlt;") };
-    }
-    
+    main();
     to_protect()
 }

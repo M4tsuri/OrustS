@@ -3,6 +3,12 @@ pub mod packers;
 pub mod gdt;
 pub mod consts;
 
+pub enum DTError {
+    Overflow,
+    ErrorReservedEntry,
+    EmptyTable
+}
+
 /// Descriptor table type, GDT or LDT
 #[repr(u8)]
 pub enum DTType {
@@ -27,7 +33,7 @@ impl<const LEN: usize> DescriptorTable<LEN> {
     }
 
     /// Replace the original table with a new one
-    pub fn replace(&mut self, src: &[Descriptor]) -> Result<(), &'static str> {
+    pub fn replace(&mut self, src: &[Descriptor]) -> Result<(), DTError> {
         self.reset();
         for entry in src {
             self.add(*entry)?;
@@ -36,9 +42,9 @@ impl<const LEN: usize> DescriptorTable<LEN> {
     }
 
     /// Add an entry to this descriptor table
-    pub fn add(&mut self, entry: Descriptor) -> Result<u16, &'static str> {
+    pub fn add(&mut self, entry: Descriptor) -> Result<u16, DTError> {
         if self.cur >= LEN - 1 {
-            return Err("[add] Descriptor Table Overflow.\n");
+            return Err(DTError::Overflow);
         }
         
         self.table[self.cur as usize] = entry;
