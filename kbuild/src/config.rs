@@ -2,7 +2,7 @@ use std::{env, path::PathBuf, path::Path};
 use llvm_tools::{LlvmTools, exe};
 
 lazy_static! {
-    pub static ref ROOT_PROJ: &'static Path = Path::new("/Users/ctsinon/Projects/Orangs/OrustS/");
+    pub static ref ROOT_PROJ: &'static Path = Path::new("./");
     pub static ref CARGO: PathBuf = {
         let cargo_path = env::var("CARGO").expect("Missing CARGO environment variable");
         Path::new(&cargo_path).to_path_buf()
