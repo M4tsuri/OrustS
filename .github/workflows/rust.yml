@@ -23,6 +23,4 @@ jobs:
             components: rustfmt, clippy
 
       - name: Build Kernel
-        uses: actions-rs/cargo@v1
-        with:
-          command: kbuild build
+        run: cargo kbuild build
