@@ -1,5 +1,7 @@
+#[cfg(feature = "alloc")]
 extern crate alloc;
 
+#[cfg(feature = "alloc")]
 use alloc::{format, string::String};
 
 use crate::instrs::inb;
@@ -46,7 +48,7 @@ pub enum ATAError {
     DeviceNotExist,
     NotATADevice
 }
-
+#[cfg(feature = "alloc")]
 impl Into<String> for ATAError {
     fn into(self) -> String {
         match self {
