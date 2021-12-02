@@ -6,7 +6,6 @@
 
 mod display;
 mod load_kernel;
-mod kctx;
 
 extern crate alloc;
 
