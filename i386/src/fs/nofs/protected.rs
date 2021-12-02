@@ -3,7 +3,9 @@ use alloc::string::String;
 
 use crate::bios::disk::{is_sector_aligned, lba_to_size, size_to_lba};
 use crate::fs::{FSError, FileSystem};
+use crate::hardware::ata::pio::ATADiskInfo;
 use crate::hardware::ata::{ATADriver, ATAError};
+use crate::utils::u8x::CastUp;
 
 use super::NoFSIdent;
 
@@ -19,21 +21,16 @@ impl<T: Into<String>> Into<String> for FSError<T> {
 /// The nofs driver for protected mode, the hard disk access is made with ATA PIO
 pub struct NoFSProtected {
     drive: ATADriver,
-    sector_num: u64,
+    disk_info: ATADiskInfo
 }
 
 impl NoFSProtected {
     pub fn new(drive: ATADriver) -> Result<Self, FSError<ATAError>> {
-        let res = drive.pio_identify()?;
+        let disk_info = drive.pio_identify()?;
         Ok(Self {
             drive,
-            sector_num: res[200] as u64 | 
-            (res[201] as u64) << 8 |
-            (res[202] as u64) << 16 |
-            (res[203] as u64) << 24 |
-            (res[204] as u64) << 32 |
-            (res[205] as u64) << 40
-        }) 
+            disk_info
+        })
     }
 }
 
@@ -59,7 +56,8 @@ impl FileSystem<NoFSIdent, ATAError> for NoFSProtected {
             return Err(FSError::DiskError(ATAError::BufferNotAligned))
         }
         let mut sector_num = size_to_lba(dest.len());
-        let remained_sector = self.sector_num - lba;
+        let max_sector: u64 = self.disk_info.lba48_sec.cast_le();
+        let remained_sector: u64 = max_sector - lba;
 
         if sector_num > remained_sector {
             sector_num = remained_sector;

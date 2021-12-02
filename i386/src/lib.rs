@@ -1,6 +1,7 @@
 #![no_std]
 #![feature(asm)]
 #![feature(slice_as_chunks)]
+#![feature(core_intrinsics)]
 
 pub mod dt;
 pub mod ring;
