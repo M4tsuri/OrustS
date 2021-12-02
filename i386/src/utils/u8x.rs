@@ -1,10 +1,10 @@
 use core::intrinsics::size_of;
 
 /// implements n-bytes padding
-type Padding<const LEN: usize> = [u8; LEN];
+pub type Padding<const LEN: usize> = [u8; LEN];
 
 #[allow(non_camel_case_types)]
-type uint<const LEN: usize> = [u8; LEN];
+pub type uint<const LEN: usize> = [u8; LEN];
 
 const fn extend<const SRC: usize, const DEST: usize>(src: &[u8]) -> [u8; DEST] {
     if SRC > DEST {

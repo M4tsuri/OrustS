@@ -1,7 +1,34 @@
-use core::mem::size_of;
+use core::{intrinsics::transmute, mem::size_of};
 
 use super::*;
-use crate::{bios::disk::{lba_to_size, slice_as_sectors}, instrs::{inb, outb, pause}};
+use crate::{bios::disk::{lba_to_size, slice_as_sectors}, instrs::{inb, outb, pause}, utils::u8x::{Padding, uint}};
+
+/// The disk information read with ATA IDENTIFY command
+#[repr(packed)]
+pub struct ATADiskInfo {
+    _pad0: Padding<{60 * 2}>,
+    /// 60th u16
+    pub lba28_sec: u32,
+    /// 62th u16
+    _pad1: Padding<{21 * 2}>,
+    /// 83th u16
+    pub mode: u16,
+    /// 84th u16
+    _pad2: Padding<{4 * 2}>,
+    /// 88th u16
+    pub umda: u16,
+    /// 89th u16
+    _pad3: Padding<{4 * 2}>,
+    /// 93th u16
+    pub cable: u16,
+    /// 94th u16
+    _pad4: Padding<{6 * 2}>,
+    /// 100th u16 
+    pub lba48_sec: uint<6>,
+    /// 103th u16
+    _pad5: Padding<{153 * 2}>
+    // 256th 
+}
 
 pub enum ATAPIOMode {
     PIO28,
@@ -24,7 +51,7 @@ impl ATADriver {
     /// or until bit 0 (ERR, value = 1) sets.
     /// At that point, if ERR is clear, the data is ready to read from the Data 
     /// port (0x1F0). Read 256 16-bit values, and store them.
-    pub fn pio_identify(&self) -> Result<[u8; 512], ATAError> {
+    pub fn pio_identify(&self) -> Result<ATADiskInfo, ATAError> {
         let mut result: [u8; 512] = [0; 512];
 
         let drive = match self {
@@ -59,7 +86,7 @@ impl ATADriver {
                 return Err(ATAError::DiskError(inb(self.error_reg())))
             } else if status & (ATAStatus::DRQ as u8) != 0 {
                 self.pio_read_port(self.data_reg(), &mut result);
-                return Ok(result)
+                return Ok(unsafe { transmute(result) })
             }
             pause();
             status = inb(self.status_reg());
