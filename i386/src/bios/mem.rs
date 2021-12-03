@@ -24,6 +24,7 @@ pub struct E820MemRange {
     pub ty: E820MemType
 }
 
+#[derive(Clone, Copy)]
 pub struct E820MemInfo<const MAX: usize> {
     pub len: usize,
     pub ranges: [E820MemRange; MAX]

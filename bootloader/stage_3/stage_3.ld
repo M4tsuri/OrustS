@@ -27,5 +27,9 @@ SECTIONS {
     .video 753664 (NOLOAD) : {
         *(.video)
     }
+
+    .stage3 1048576 (NOLOAD) : { 
+        KEEP(*(.kernel)) 
+    }
     /DISCARD/ : { *(.eh_frame*) *(.discard)}
 }

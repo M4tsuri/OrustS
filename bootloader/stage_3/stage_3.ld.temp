@@ -33,5 +33,11 @@ SECTIONS {
         *(.video)
     }
     {{/with}}
+
+    {{#with kernel}}
+    .stage3 {{entry}} (NOLOAD) : { 
+        KEEP(*(.kernel)) 
+    }
+    {{/with}}
     /DISCARD/ : { *(.eh_frame*) *(.discard)}
 }

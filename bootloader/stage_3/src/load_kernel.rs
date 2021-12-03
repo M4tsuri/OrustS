@@ -1,4 +1,5 @@
 use core::intrinsics::transmute;
+use core::marker::PhantomData;
 
 use alloc::string::String;
 use i386::bios::disk::size_to_lba;
@@ -9,6 +10,9 @@ use i386::hardware::ata::ATAError;
 use i386::fs::{FSError, FileSystem};
 use i386::fs::nofs::protected::NoFSProtected;
 use shared::layout::*;
+
+#[link_section = ".kernel"]
+pub static KERNEL_PTR: PhantomData<()> = PhantomData;
 
 pub fn load_kernel(fs: &NoFSProtected) -> Result<(), String> {
     let kernel_lba = size_to_lba(STAGE1_SIZE + STAGE2_SIZE + STAGE3_SIZE);

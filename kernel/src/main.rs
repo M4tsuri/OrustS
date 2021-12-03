@@ -10,6 +10,8 @@ use core::panic::PanicInfo;
 
 use shared::kctx::KernelContext;
 
+use crate::display::scr_clear;
+
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     if let Some(msg) = info.message() {
@@ -21,12 +23,10 @@ fn panic(info: &PanicInfo) -> ! {
     loop {}
 }
 
-#[used]
-static mut MAGIC: [u8; 0x400] = [0xcc; 0x400];
-
 #[link_section = ".startup"]
 #[no_mangle]
 fn main(ctx: KernelContext) {
+    scr_clear();
     println!("Kernel entered.");
     loop {}
 }

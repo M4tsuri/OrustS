@@ -32,6 +32,10 @@ impl NoFSProtected {
             disk_info
         })
     }
+
+    pub fn get_disk_info(self) -> ATADiskInfo {
+        self.disk_info
+    }
 }
 
 impl FileSystem<NoFSIdent, ATAError> for NoFSProtected {

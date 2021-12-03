@@ -30,6 +30,7 @@ stages:
       video: 0xb8000
   - name: "kernel"
     meta:
+      entry: 0x100000
       start: 0x100000
       end: 0x200000
     sections:
