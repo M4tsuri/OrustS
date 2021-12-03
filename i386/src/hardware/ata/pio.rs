@@ -1,7 +1,7 @@
-use core::{intrinsics::transmute, mem::size_of};
+use core::{hint::spin_loop, intrinsics::transmute, mem::size_of};
 
 use super::*;
-use crate::{bios::disk::{lba_to_size, slice_as_sectors}, instrs::{inb, outb, pause}, utils::u8x::{Padding, uint}};
+use crate::{bios::disk::{lba_to_size, slice_as_sectors}, instrs::{inb, outb}, utils::u8x::{Padding, uint}};
 
 /// The disk information read with ATA IDENTIFY command
 #[repr(packed)]
@@ -73,7 +73,7 @@ impl ATADriver {
         }
 
         while status & (ATAStatus::BSY as u8) != 0 {
-            pause();
+            spin_loop();
             status = inb(self.status_reg());
         }
 
@@ -88,7 +88,7 @@ impl ATADriver {
                 self.pio_read_port(self.data_reg(), &mut result);
                 return Ok(unsafe { transmute(result) })
             }
-            pause();
+            spin_loop();
             status = inb(self.status_reg());
         }
     }
@@ -102,7 +102,7 @@ impl ATADriver {
         let mut status = inb(self.status_reg());
         // spin wait until the BUSY flag is unset and READY flag is set
         while status & ATAStatus::BSY as u8 != 0 || status & ATAStatus::RDY as u8 != 1{
-            pause();
+            spin_loop();
             status = inb(self.status_reg());
         }
     }
@@ -161,29 +161,25 @@ impl ATADriver {
 
         // send read sector command
         outb(self.command_reg(), ATACommand::ReadExt as u8);
-        // delay 400ns to wait ATA controller to set status registers
-        self.ata_delay_400ns();
-
-        let mut status = inb(self.status_reg());
-        // spin wait until the BUSY flag is unset
-        while status & ATAStatus::BSY as u8 != 0 {
-            pause();
-            status = inb(self.status_reg());
-        }
-
-        // make a error checking
-        if status & (ATAStatus::DF as u8 | ATAStatus::ERR as u8) != 0 {
-            return Err(ATAError::DiskError(inb(self.error_reg())))
-        }
 
         for sector in &mut sectors[..sec_num as usize] {
-            self.pio_read_port(self.data_reg(), sector);
+            // delay 400ns to wait ATA controller to set status registers
             self.ata_delay_400ns();
-            status = inb(self.status_reg());
+
+            let mut status = inb(self.status_reg());
+            // spin wait until the BUSY flag is unset
+            while status & ATAStatus::BSY as u8 != 0 {
+                spin_loop();
+                status = inb(self.status_reg());
+            }
+        
+            // make a error checking
             if status & (ATAStatus::DF as u8 | ATAStatus::ERR as u8) != 0 {
                 return Err(ATAError::DiskError(inb(self.error_reg())))
             }
+            self.pio_read_port(self.data_reg(), sector);
         }
+        
         Ok(())
     }
 

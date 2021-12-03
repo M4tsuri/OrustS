@@ -6,15 +6,6 @@ pub fn cli() {
     }
 }
 
-/// The pause instruction tells processor that we are 
-/// in a spin-wait loop, thus it can make some optimization.
-#[inline(always)]
-pub fn pause() {
-    unsafe {
-        asm!("pause")
-    }
-}
-
 #[inline(always)]
 pub fn inb(port: u16) -> u8 {
     let data: u8;
