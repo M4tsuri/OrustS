@@ -19,7 +19,7 @@ This operation system is under active developing.
   - [x] load kernel image into ram
   - [x] transfer into protect mode
   - [ ] [optional] setup page table
-  - [ ] transfer control to kernel
+  - [x] transfer control to kernel
 - [ ] implement a simple kernel
   - [ ] setup a larger GDT
   - [ ] [optional] add support for paging
