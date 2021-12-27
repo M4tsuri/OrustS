@@ -4,7 +4,7 @@ use core::mem::size_of;
 
 
 use crate::layout::*;
-use i386::driver::e820::{E820MemInfo, E820MemRange};
+use i386::driver::mem::e820::{E820MemInfo, E820MemRange};
 
 /// the maximum number of meminfo struct
 pub const MEMINFO_MAX: usize = MEMINFO_SIZE / (size_of::<E820MemRange>() + 4);

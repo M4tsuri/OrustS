@@ -1,5 +1,4 @@
 pub mod real;
-pub mod dap;
 
 #[cfg(feature = "alloc")]
 pub mod protected;

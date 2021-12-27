@@ -6,7 +6,7 @@ use i386::utils::disk::size_to_lba;
 /// The module provides function for loading kernel from disk into memory.
 /// Since we need to load kernel to 1MB, which exceeds the real mode addressing
 /// limit, we use ATA command to do this work.
-use i386::driver::ata::ATAError;
+use i386::driver::disk::ata::ATAError;
 use i386::fs::{FSError, FileSystem};
 use i386::fs::nofs::protected::NoFSProtected;
 use shared::layout::*;

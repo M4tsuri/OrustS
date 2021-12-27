@@ -45,14 +45,14 @@ fn extended_read_sectors(disk: u8, dap_ptr: *const DAP) -> Result<(), DAPError> 
     }
 }
 
-pub(super) fn read_disk(addr: (u8, u64), buffer: &mut [u8]) -> Result<(), DAPError> {
+pub(crate) fn read_disk(addr: (u8, u64), buffer: &mut [u8]) -> Result<(), DAPError> {
     let dest = buffer.as_ptr() as usize;
     let dap = DAP::new(addr, (dest as u16, ((dest >> 16) as u16) << 12), buffer.len());
     dap.read()?;
     Ok(())
 }
 
-pub(super) fn reset_disk(disk_id: u8) -> Result<(), DAPError> {
+pub(crate) fn reset_disk(disk_id: u8) -> Result<(), DAPError> {
     let mut res: u16;
     unsafe {
         asm! {

@@ -1,6 +1,6 @@
 use core::{fmt::{Arguments, Write}, intrinsics::transmute};
 
-use i386::screen::{Cursor, Screen, s80x25c16::Buffer};
+use i386::driver::screen::{Cursor, Screen, s80x25c16::Buffer};
 use shared::layout::VIDEO_START;
 use spin::Mutex;
 
