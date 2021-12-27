@@ -1,8 +1,8 @@
 use core::mem::size_of;
 
 /// This module is only intended to be used by bootloader to setup a initial GDT
-use i386::dt::{packers::*, consts::*};
-use i386::dt::{DescriptorTable, Descriptor, DTType};
+use i386::mem::dt::{packers::*, consts::*};
+use i386::mem::dt::{DescriptorTable, Descriptor, DTType};
 use crate::layout::*;
 use i386::ring::Privilege;
 
