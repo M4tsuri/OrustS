@@ -1,4 +1,8 @@
-use core::{mem::size_of, ops::ControlFlow};
+use core::{
+    mem::size_of, 
+    ops::ControlFlow,
+    arch::asm
+};
 use crate::utils::addr::to_addr16;
 
 /// The type of a memory range, returned by e820 syscall

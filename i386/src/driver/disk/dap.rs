@@ -1,6 +1,7 @@
 //! This module contains operations on DAP interface for real mode hard disk read.
 
 use crate::utils::disk::*;
+use core::arch::asm;
 
 const MAX_READ_BYTES: u32 = 0x10000;
 const MAX_READ_SECTORS: u16 = (MAX_READ_BYTES >> SECTOR_ALIGN as u32) as u16;

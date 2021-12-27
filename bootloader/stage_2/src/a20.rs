@@ -1,4 +1,7 @@
-use core::ptr::addr_of;
+use core::{
+    ptr::addr_of,
+    arch::asm
+};
 
 /// Code for checking and enabling the A20 line.
 /// If the A20 line of a CPU is not enabled, the max address it can use is 0xfffff

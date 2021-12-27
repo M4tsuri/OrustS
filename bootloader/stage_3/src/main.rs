@@ -1,6 +1,6 @@
 #![no_std]
 #![no_main]
-#![feature(asm)]
+
 #![feature(alloc_error_handler)]
 #![feature(panic_info_message)]
 
@@ -9,16 +9,27 @@ mod load_kernel;
 
 extern crate alloc;
 
-use core::intrinsics::transmute;
-use core::marker::PhantomData;
-use core::{alloc::Layout, panic::PanicInfo};
+use core::{
+    intrinsics::transmute,
+    marker::PhantomData,
+    alloc::Layout, 
+    panic::PanicInfo,
+    arch::asm
+};
 use alloc::string::String;
 use display::scr_clear;
-use i386::fs::{FSError, nofs::protected::NoFSProtected};
-use i386::driver::disk::ata::{ATADriver, ATAError};
+use i386::{
+    fs::{
+        FSError, 
+        nofs::protected::NoFSProtected
+    },
+    driver::disk::ata::{ATADriver, ATAError}
+};
 use load_kernel::load_kernel;
-use shared::kctx::KernelContext;
-use shared::mem::MEMINFO;
+use shared::{
+    kctx::KernelContext,
+    mem::MEMINFO
+};
 use static_alloc::Bump;
 
 use crate::load_kernel::KERNEL_PTR;

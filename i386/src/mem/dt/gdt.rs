@@ -1,4 +1,5 @@
 use super::{DTError, Descriptor, DescriptorTable};
+use core::arch::asm;
 
 /// A GDT Descriptor descriping the length of GDT and location of GDT in memory.
 /// The address of this describtor will be passed to lgdt instruction to fill GDT.

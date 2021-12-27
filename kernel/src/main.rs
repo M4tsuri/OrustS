@@ -1,13 +1,14 @@
 #![no_std]
 #![no_main]
-#![feature(asm)]
 #![feature(panic_info_message)]
 
 mod display;
 #[macro_use]
 extern crate lazy_static;
-use core::panic::PanicInfo;
-
+use core::{
+    panic::PanicInfo,
+    arch::asm
+};
 use i386::utils::u8x::CastUp;
 use shared::kctx::KernelContext;
 

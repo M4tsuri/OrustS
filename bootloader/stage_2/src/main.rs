@@ -1,6 +1,6 @@
 #![no_std]
 #![no_main]
-#![feature(asm)]
+
 #![feature(asm_const)]
 #![feature(asm_sym)]
 
@@ -9,7 +9,10 @@ mod display;
 mod img_load;
 mod a20;
 
-use core::panic::PanicInfo;
+use core::{
+    panic::PanicInfo,
+    arch::asm
+};
 use a20::{check_a20, enable_a20};
 use display::display_real;
 use img_load::load_stage3;

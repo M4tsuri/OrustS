@@ -1,8 +1,13 @@
-use core::{intrinsics::transmute, marker::PhantomData};
-
-use shared::gdt::{GDTSelector, GDT_TABLE};
-use shared::layout::STACK_END;
-use i386::{dt::gdt::GDTDescriptor, instrs::*};
+use core::{
+    intrinsics::transmute, 
+    marker::PhantomData,
+    arch::asm
+};
+use shared::{
+    gdt::{GDTSelector, GDT_TABLE},
+    layout::STACK_END
+};
+use i386::{mem::dt::gdt::GDTDescriptor, instrs::*};
 
 use crate::img_load::STAGE3_PTR;
 
