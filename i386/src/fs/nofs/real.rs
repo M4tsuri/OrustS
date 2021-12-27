@@ -1,4 +1,5 @@
-use crate::{bios::disk::{DAPError, read_disk, reset_disk}, fs::{FSError, FileSystem}};
+use crate::fs::{FSError, FileSystem};
+use super::dap::*;
 
 use super::NoFSIdent;
 

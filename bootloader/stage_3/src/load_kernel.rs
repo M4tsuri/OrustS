@@ -2,7 +2,7 @@ use core::intrinsics::transmute;
 use core::marker::PhantomData;
 
 use alloc::string::String;
-use i386::bios::disk::size_to_lba;
+use i386::utils::disk::size_to_lba;
 /// The module provides function for loading kernel from disk into memory.
 /// Since we need to load kernel to 1MB, which exceeds the real mode addressing
 /// limit, we use ATA command to do this work.

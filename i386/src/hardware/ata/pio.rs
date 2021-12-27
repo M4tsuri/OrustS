@@ -1,7 +1,10 @@
+//! This module contains ATA PIO mode operations for protected mode disk access.
+
 use core::{hint::spin_loop, intrinsics::transmute, mem::size_of};
 
 use super::*;
-use crate::{bios::disk::{lba_to_size, slice_as_sectors}, instrs::{inb, outb}, utils::u8x::{Padding, uint}};
+use crate::{instrs::{inb, outb}, utils::u8x::{Padding, uint}};
+use crate::utils::disk::*;
 
 /// The disk information read with ATA IDENTIFY command
 #[repr(packed)]

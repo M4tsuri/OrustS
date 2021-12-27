@@ -1,7 +1,7 @@
 extern crate alloc;
 use alloc::string::String;
 
-use crate::bios::disk::{is_sector_aligned, lba_to_size, size_to_lba};
+use crate::utils::disk::{is_sector_aligned, lba_to_size, size_to_lba};
 use crate::fs::{FSError, FileSystem};
 use crate::hardware::ata::pio::ATADiskInfo;
 use crate::hardware::ata::{ATADriver, ATAError};
