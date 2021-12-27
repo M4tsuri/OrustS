@@ -5,10 +5,9 @@
 
 pub mod dt;
 pub mod ring;
-pub mod bios;
 pub mod utils;
 pub mod tss;
 pub mod instrs;
-pub mod hardware;
+pub mod driver;
 pub mod screen;
 pub mod fs;

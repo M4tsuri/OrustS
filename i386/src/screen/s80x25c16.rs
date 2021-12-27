@@ -1,5 +1,8 @@
 use super::VideoBuf;
 
+/// 80x25 16 color mode BIOS int 10h mode number
+pub const BIOS_80X25_16_COLOR: u8 = 3;
+
 pub const HEIGHT: usize = 25;
 pub const WIDTH: usize = 80;
 

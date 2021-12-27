@@ -15,7 +15,7 @@ use core::{alloc::Layout, panic::PanicInfo};
 use alloc::string::String;
 use display::scr_clear;
 use i386::fs::{FSError, nofs::protected::NoFSProtected};
-use i386::hardware::ata::{ATADriver, ATAError};
+use i386::driver::ata::{ATADriver, ATAError};
 use load_kernel::load_kernel;
 use shared::kctx::KernelContext;
 use shared::mem::MEMINFO;
