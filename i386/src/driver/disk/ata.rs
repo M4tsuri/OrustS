@@ -3,7 +3,6 @@ extern crate alloc;
 
 #[cfg(feature = "alloc")]
 use alloc::{format, string::String};
-
 use crate::instrs::inb;
 
 /// Support for some useful ATA PIO commands
@@ -48,6 +47,7 @@ pub enum ATAError {
     DeviceNotExist,
     NotATADevice
 }
+
 #[cfg(feature = "alloc")]
 impl Into<String> for ATAError {
     fn into(self) -> String {

@@ -9,4 +9,3 @@ edition = "2021"
 alloc = []
 
 [dependencies]
-modular-bitfield = "0.11.2"

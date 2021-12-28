@@ -1,15 +1,45 @@
 //! This module defines data structures and related utilities about paging.
 //! We only support PAE mode paging now.
 
-// pub mod pae;
+extern crate alloc;
+
+pub mod pae;
+
+/// supported paging modes
+pub enum PagingMode {
+    PAE
+}
+
+/// This struct configs 
+pub struct PagingConfig {
+    /// paging mode
+    pub mode: PagingMode,
+    /// page attribute table 
+    pub pat: bool ,
+    /// supervisor-mode access prevention
+    pub smap: bool,
+    /// supervisor-mode execution prevention
+    pub smep: bool
+}
+
+/// Memory type for caching, this only work if PAT is supported.
+/// The combination of these flags creates a 3-bit integer:
+/// PAT * 4 + PCD * 2 + PWT.
+/// Which is an index into PAT, indicating the memory cache type.
+/// FIXME: explicitly set PAT
+#[derive(Default)]
+pub struct PATMemoryType {
+    pat: bool,
+    /// page level write-through
+    pwt: bool,
+    /// page level cache disable
+    pcd: bool
+}
 
 /// The unified interface for paging modes. every paging mode should implement this trait.
-/// V is the type of virtual address, P is the type of physical address.
-/// Note that V and P must be unsigned integer.
-pub trait Paging<V, P> {
+pub trait Paging {
     /// Enter paging mode 
-    fn enter();
-    /// Convert virtual address to physical address 
-    fn virt_to_phys(virt: V) -> P;
-    fn phys_to_virt(phys: P) -> V;
+    fn enable(&self);
+    /// update the page table to cr3 or related control registers
+    fn update(&self);
 }

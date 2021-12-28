@@ -3,7 +3,10 @@ use core::{
     ops::ControlFlow,
     arch::asm
 };
-use crate::utils::addr::to_addr16;
+use crate::{
+    utils::addr::to_addr16,
+    mem::PhysAddr
+};
 
 /// The type of a memory range, returned by e820 syscall
 #[derive(Clone, Copy)]
@@ -21,8 +24,8 @@ pub enum E820MemType {
 #[derive(Clone, Copy)]
 #[repr(C, align(8))]
 pub struct E820MemRange {
-    pub base: u64,
-    pub len: u64,
+    pub base: PhysAddr,
+    pub len: PhysAddr,
     /// type of this memory range
     pub ty: E820MemType
 }

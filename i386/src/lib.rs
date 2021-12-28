@@ -1,4 +1,6 @@
 #![no_std]
+
+#![feature(asm_const)]
 #![feature(slice_as_chunks)]
 #![feature(core_intrinsics)]
 

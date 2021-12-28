@@ -6,6 +6,7 @@
 
 mod display;
 mod load_kernel;
+mod paging;
 
 extern crate alloc;
 
@@ -17,6 +18,7 @@ use core::{
     arch::asm
 };
 use alloc::string::String;
+
 use display::scr_clear;
 use i386::{
     fs::{
@@ -27,8 +29,8 @@ use i386::{
 };
 use load_kernel::load_kernel;
 use shared::{
-    kctx::KernelContext,
-    mem::MEMINFO
+    mem::MEMINFO,
+    kctx::KernelContext
 };
 use static_alloc::Bump;
 
