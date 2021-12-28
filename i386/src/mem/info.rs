@@ -2,30 +2,12 @@
 
 extern crate alloc;
 
-use core::ops::Sub;
-
 use alloc::vec::Vec;
 
 use crate::{
     driver::mem::e820::{E820MemInfo, E820MemType},
-    mem::PhysAddr
+    mem::{PhysAddr, MemRange}
 };
-
-/// A memory range 
-pub struct MemRange<T> {
-    pub start: T,
-    pub end: T,
-    pub len: T,
-}
-
-impl<T: Sub<Output = T> + Copy> MemRange<T> {
-    pub fn new(start: T, end: T) -> Self {
-        Self {
-            start, end,
-            len: end - start
-        }
-    }
-}
 
 pub struct PhysMemInfo {
     pub segs: Vec<MemRange<PhysAddr>>

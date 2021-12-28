@@ -26,7 +26,7 @@ fn panic(info: &PanicInfo) -> ! {
 }
 
 /// log some hardware information on screen
-fn show_info(ctx: &KernelContext) {
+fn show_info(ctx: &KernelContext<>) {
     // show memory information
     println!("\nMemory Information: \n");
     println!("    {:<12}{:<12}{:<12}", "Base", "End", "Type");

@@ -1,8 +1,6 @@
 //! This module defines data structures and related utilities about paging.
 //! We only support PAE mode paging now.
 
-extern crate alloc;
-
 pub mod pae;
 
 /// supported paging modes
@@ -34,6 +32,12 @@ pub struct PATMemoryType {
     pwt: bool,
     /// page level cache disable
     pcd: bool
+}
+
+impl PATMemoryType {
+    pub const fn new(pat: bool, pwt: bool, pcd: bool) -> Self {
+        Self { pat, pwt, pcd }
+    }
 }
 
 /// The unified interface for paging modes. every paging mode should implement this trait.

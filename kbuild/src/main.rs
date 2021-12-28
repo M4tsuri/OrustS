@@ -24,18 +24,21 @@ fn read_to_bytes(path: &PathBuf) -> Vec<u8> {
 
 fn build(target: &Path) {
     let target = File::create(target).unwrap();
+    let mut wrote_bytes = 0;
     
-    bootloader::build()
+    let mut f = bootloader::build()
         .iter()
         .chain(kernel::build().iter())
         .map(|x| read_to_bytes(x))
-        .fold(target, 
-            |mut f, bin| {
-                println!("Size is {}", bin.len());
-                f.write(&bin).unwrap(); 
-                f 
-            }
-        );
+        .fold(target, |mut f, bin| {
+            wrote_bytes += bin.len();
+            println!("Size is {}", bin.len());
+            f.write(&bin).unwrap(); 
+            f 
+        });
+    
+    let padding = vec![0; (1 << 9) - (((1 << 9) - 1) & wrote_bytes)];
+    f.write(&padding).unwrap();
 }
 
 fn run(target: &Path) {

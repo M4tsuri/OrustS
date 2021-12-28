@@ -34,7 +34,7 @@ use shared::{
 };
 use static_alloc::Bump;
 
-use crate::load_kernel::KERNEL_PTR;
+use crate::{load_kernel::KERNEL_PTR, paging::{KERNEL_PAGING, enable_paging}};
 
 #[global_allocator]
 static ALLOC: Bump<[u8; 1 << 16]> = Bump::uninit();
@@ -64,11 +64,14 @@ fn main() -> Result<KernelContext, String> {
         .map_err(|x| <FSError<ATAError> as Into<String>>::into(x))?;
     load_kernel(&fs)?;
     println!("Kernel loaded.");
+
+    enable_paging();
     // switch to real mode and poweroff, just for illustrating our mode switching works.
     // crate::mode_switch::to_real(crate::mode_switch::poweroff as u16);
     Ok(KernelContext {
         disk_info: fs.get_disk_info(),
-        mem_info: unsafe { MEMINFO.clone() }
+        mem_info: unsafe { MEMINFO.clone() },
+        kernel_paging: &KERNEL_PAGING
     })
 }
 
