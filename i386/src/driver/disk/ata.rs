@@ -1,3 +1,8 @@
+//! Support for some useful ATA PIO commands
+//! See https://wiki.osdev.org/ATA_PIO_Mode
+
+pub mod pio;
+
 #[cfg(feature = "alloc")]
 extern crate alloc;
 
@@ -5,10 +10,6 @@ extern crate alloc;
 use alloc::{format, string::String};
 use crate::instrs::inb;
 
-/// Support for some useful ATA PIO commands
-/// See https://wiki.osdev.org/ATA_PIO_Mode
-
-pub mod pio;
 
 #[repr(u8)]
 enum ATADCR {

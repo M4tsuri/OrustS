@@ -1,8 +1,8 @@
-/// Some bitwise operations which may be useful for writing out code.
-/// Functions and macros in this module must not appear in the object file.
-/// Since macros are expanded at compile-time, we do not need to worry about them.
-/// But functions must be const, and explictly declared to be put in .discard section, 
-/// which will be dropped during linking.
+//! Some bitwise operations which may be useful for writing out code.
+//! Functions and macros in this module must not appear in the object file.
+//! Since macros are expanded at compile-time, we do not need to worry about them.
+//! But functions must be const, and explictly declared to be put in .discard section, 
+//! which will be dropped during linking.
 
 /// Assign src[src_start:src_start + len] bit to dest[dest_start:dest_start + len]
 /// TODO: for some naive but universal circumstances, for example, len = 1 or src_start = 0, 

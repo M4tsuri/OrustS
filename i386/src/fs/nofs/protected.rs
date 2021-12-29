@@ -1,11 +1,19 @@
 extern crate alloc;
 use alloc::string::String;
 
-use crate::utils::disk::{is_sector_aligned, lba_to_size, size_to_lba};
-use crate::fs::{FSError, FileSystem};
-use crate::driver::disk::ata::pio::ATADiskInfo;
-use crate::driver::disk::ata::{ATADriver, ATAError};
-use crate::utils::u8x::CastUp;
+use crate::{
+    utils::disk::{
+        is_sector_aligned, 
+        lba_to_size, 
+        size_to_lba
+    },
+    fs::{FSError, FileSystem},
+    driver::{
+        disk::ata::pio::ATADiskInfo,
+        disk::ata::{ATADriver, ATAError},
+    },
+    utils::u8x::CastUp,
+};
 
 use super::NoFSIdent;
 

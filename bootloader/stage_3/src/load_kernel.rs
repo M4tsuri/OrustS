@@ -1,14 +1,21 @@
-use core::intrinsics::transmute;
-use core::marker::PhantomData;
+//! The module provides function for loading kernel from disk into memory.
+//! Since we need to load kernel to 1MB, which exceeds the real mode addressing
+//! limit, we use ATA command to do this work.
 
+use core::{
+    intrinsics::transmute,
+    marker::PhantomData
+};
 use alloc::string::String;
-use i386::utils::disk::size_to_lba;
-/// The module provides function for loading kernel from disk into memory.
-/// Since we need to load kernel to 1MB, which exceeds the real mode addressing
-/// limit, we use ATA command to do this work.
-use i386::driver::disk::ata::ATAError;
-use i386::fs::{FSError, FileSystem};
-use i386::fs::nofs::protected::NoFSProtected;
+use i386::{
+    utils::disk::size_to_lba,
+    driver::disk::ata::ATAError,
+    fs::{
+        FSError, 
+        FileSystem,
+        nofs::protected::NoFSProtected
+    },
+};
 use shared::layout::*;
 
 #[link_section = ".kernel"]

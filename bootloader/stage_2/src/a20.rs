@@ -3,6 +3,7 @@ use core::{
     arch::asm
 };
 
+
 /// Code for checking and enabling the A20 line.
 /// If the A20 line of a CPU is not enabled, the max address it can use is 0xfffff
 /// due to hardware limitation. All memory access with address larger than it will be 

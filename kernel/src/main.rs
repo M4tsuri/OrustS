@@ -3,15 +3,16 @@
 #![feature(panic_info_message)]
 
 mod display;
+
 #[macro_use]
 extern crate lazy_static;
+
 use core::{
     panic::PanicInfo,
     arch::asm
 };
 use i386::utils::u8x::CastUp;
 use shared::kctx::KernelContext;
-
 use crate::display::scr_clear;
 
 #[panic_handler]

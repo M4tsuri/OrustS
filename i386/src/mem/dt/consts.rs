@@ -1,4 +1,4 @@
-/// Consts and magic numbers in Descriptors.
+//! Consts and magic numbers in Descriptors.
 
 /// type field enums
 pub const SEG_CODE: u8 = 0b1000;

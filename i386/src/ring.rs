@@ -1,4 +1,4 @@
-/// Module for privilege management
+//! Module for privilege management
 
 /// Privilege level on Intel platform.
 ///

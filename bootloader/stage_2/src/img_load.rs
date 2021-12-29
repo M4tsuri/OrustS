@@ -1,13 +1,18 @@
-/// This module loads the second stage image into memory.
+//! This module loads the second stage image into memory.
 
 use core::{intrinsics::transmute, marker::PhantomData};
 
-use i386::utils::disk::size_to_lba;
-use i386::fs::{FSError, FileSystem, nofs::real::NoFSReal};
-use i386::driver::disk::dap::DAPError;
-use shared::layout::{STAGE1_SIZE, STAGE2_SIZE, STAGE3_SIZE, STAGE3_START};
-
-/// The address of the second stage image.
+use i386::{
+    utils::disk::size_to_lba,
+    fs::{FSError, FileSystem, nofs::real::NoFSReal},
+    driver::disk::dap::DAPError
+};
+use shared::layout::{
+    STAGE1_SIZE, 
+    STAGE2_SIZE, 
+    STAGE3_SIZE, 
+    STAGE3_START
+};
 
 
 /// Just a tag indicating where is the second stage. The .stage_2 section

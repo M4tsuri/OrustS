@@ -1,17 +1,22 @@
-#[macro_use]
-extern crate lazy_static;
-use std::fs::File;
-use std::io::{Read, Write};
-use std::path::{Path, PathBuf};
-use std::process::Command;
-use std::str::FromStr;
-extern crate clap;
-use clap::{Arg, value_t};
-use config::ROOT_PROJ;
-
 mod bootloader;
 mod kernel;
 mod config;
+
+#[macro_use]
+extern crate lazy_static;
+extern crate clap;
+
+use std::{
+    fs::File,
+    io::{Read, Write},
+    path::{Path, PathBuf},
+    process::Command,
+    str::FromStr
+};
+use clap::{Arg, value_t};
+use config::ROOT_PROJ;
+
+
 
 
 fn read_to_bytes(path: &PathBuf) -> Vec<u8> {

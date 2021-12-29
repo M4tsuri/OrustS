@@ -1,4 +1,4 @@
-/// This module loads the second stage image into memory.
+//! This module loads the second stage image into memory.
 
 use core::{intrinsics::transmute, marker::PhantomData};
 use i386::{

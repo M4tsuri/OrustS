@@ -1,10 +1,17 @@
-use core::mem::size_of;
+//! This module is only intended to be used by bootloader to setup a initial GDT
 
-/// This module is only intended to be used by bootloader to setup a initial GDT
-use i386::mem::dt::{packers::*, consts::*};
-use i386::mem::dt::{DescriptorTable, Descriptor, DTType};
+use core::mem::size_of;
+use i386::{
+    mem::dt::{
+        packers::*, 
+        consts::*, 
+        DescriptorTable, 
+        Descriptor, 
+        DTType},
+    ring::Privilege
+};
+
 use crate::layout::*;
-use i386::ring::Privilege;
 
 /// The length of GDT, 8 by default (include a null entry).
 /// Current max length is 0x100 / 8 = 32, which is specified in linker script in stage 2

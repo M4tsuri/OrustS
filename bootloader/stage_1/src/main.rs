@@ -13,6 +13,7 @@ use core::{
 use img_load::{STAGE2_PTR, load_stage2};
 use i386::driver::screen::s80x25c16::BIOS_80X25_16_COLOR;
 
+
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
     loop {}

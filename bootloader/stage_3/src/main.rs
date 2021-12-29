@@ -18,7 +18,6 @@ use core::{
     arch::asm
 };
 use alloc::string::String;
-
 use display::scr_clear;
 use i386::{
     fs::{
@@ -35,6 +34,7 @@ use shared::{
 use static_alloc::Bump;
 
 use crate::{load_kernel::KERNEL_PTR, paging::{KERNEL_PAGING, enable_paging}};
+
 
 #[global_allocator]
 static ALLOC: Bump<[u8; 1 << 16]> = Bump::uninit();

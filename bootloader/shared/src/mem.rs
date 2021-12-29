@@ -1,10 +1,10 @@
-/// This module provides support for reading memory information
+//! This module provides support for reading memory information
 
 use core::mem::size_of;
-
+use i386::driver::mem::e820::{E820MemInfo, E820MemRange};
 
 use crate::layout::*;
-use i386::driver::mem::e820::{E820MemInfo, E820MemRange};
+
 
 /// the maximum number of meminfo struct
 pub const MEMINFO_MAX: usize = MEMINFO_SIZE / (size_of::<E820MemRange>() + 4);

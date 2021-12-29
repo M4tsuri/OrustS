@@ -1,4 +1,7 @@
-use std::{path::{Path, PathBuf}, process::Command};
+use std::{
+    path::{Path, PathBuf}, 
+    process::Command
+};
 use crate::config::*;
 
 lazy_static! {

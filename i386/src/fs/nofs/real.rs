@@ -1,5 +1,7 @@
-use crate::fs::{FSError, FileSystem};
-use crate::driver::disk::dap::*;
+use crate::{
+    fs::{FSError, FileSystem},
+    driver::disk::dap::*
+};
 
 use super::NoFSIdent;
 

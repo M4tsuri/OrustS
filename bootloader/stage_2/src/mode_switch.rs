@@ -11,6 +11,7 @@ use i386::{mem::dt::gdt::GDTDescriptor, instrs::*};
 
 use crate::img_load::STAGE3_PTR;
 
+
 /// Transfer cpu mode from real mode to protect mode.
 /// Protect mode privides us with segmentation of physical address space (also called linear address space), 
 /// which allows us to isolate code, data and stack segment from each other and

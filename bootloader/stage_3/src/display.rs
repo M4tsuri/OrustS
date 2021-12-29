@@ -1,6 +1,9 @@
 use core::fmt::{Arguments, Write};
-
-use i386::driver::screen::{Cursor, Screen, s80x25c16::{Buffer, WIDTH, HEIGHT}};
+use i386::driver::screen::{
+    Cursor, 
+    Screen, 
+    s80x25c16::{Buffer, WIDTH, HEIGHT}
+};
 
 #[link_section = ".video"]
 static mut VIDEO_BUFFER: Buffer = [[0; WIDTH]; HEIGHT];

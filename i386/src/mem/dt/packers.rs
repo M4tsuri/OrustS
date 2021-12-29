@@ -1,7 +1,8 @@
-use crate::utils::bitwise::mask_assign;
-use crate::ring::Privilege;
-use super::consts::*;
-use super::{Descriptor, Selector, DTType};
+use crate::{
+    utils::bitwise::mask_assign,
+    ring::Privilege
+};
+use super::{consts::*, Descriptor, Selector, DTType};
 
 /// Pack data in parameter to a valid GDT entry.
 /// A GDT entry can be represented as a 64 bit value, whose fields are defined as follows:

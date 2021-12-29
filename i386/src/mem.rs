@@ -1,9 +1,9 @@
-use core::ops::Sub;
-
-/// This module contains code for memory management
+//! This module contains code for memory management
 
 pub mod paging;
 pub mod dt;
+
+use core::ops::Sub;
 
 #[cfg(feature = "alloc")]
 pub mod info;

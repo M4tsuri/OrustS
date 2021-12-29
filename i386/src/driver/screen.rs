@@ -1,4 +1,4 @@
-/// Provide some functions for displaying content on screen
+//! Provide some functions for displaying content on screen
 
 pub mod s80x25c16;
 

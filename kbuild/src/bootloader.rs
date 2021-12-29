@@ -1,4 +1,8 @@
-use std::{collections::HashMap, path::{Path, PathBuf}, process::Command};
+use std::{
+    collections::HashMap, 
+    path::{Path, PathBuf}, 
+    process::Command
+};
 use handlebars::Handlebars;
 use serde::{Deserialize, Serialize};
 use crate::config::*;

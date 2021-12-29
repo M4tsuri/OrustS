@@ -1,7 +1,7 @@
-/// This segment is overlapped with the code segment.
-/// It should only be used for protect-real mode switching.
-/// The base address and limit of this segment provides us with appreciated values 
-/// for mode switching and real mode addressing.
+//! This segment is overlapped with the code segment.
+//! It should only be used for protect-real mode switching.
+//! The base address and limit of this segment provides us with appreciated values 
+//! for mode switching and real mode addressing.
 
 pub const I386_MAX_ADDR: usize = 0xffffffff;
 pub const NORMAL_START: usize = 0;
